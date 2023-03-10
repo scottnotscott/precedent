@@ -1,10 +1,10 @@
 import Head from "next/head";
 
-const DOMAIN = "https://precedent.dev";
+const DOMAIN = "localhost:3000";
 
 export default function Meta({
-  title = "Precedent - Building blocks for your Next.js project",
-  description = "Precedent is the all-in-one solution for your Next.js project. It includes a design system, authentication, analytics, and more.",
+  title = "Feudal PBBG",
+  description = "Feudal is a Browser-based MMO Role-playing game.",
   image = `${DOMAIN}/api/og`,
 }: {
   title?: string;

@@ -26,7 +26,6 @@ export default function Layout({
 
   return (
     <>
-      <Meta {...meta} />
       <SignInModal />
       <div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100" />
       <div
@@ -45,7 +44,7 @@ export default function Layout({
               height="30"
               className="mr-2 rounded-sm"
             ></Image>
-            <p>Precedent</p>
+            <p>Feud.al</p>
           </Link>
           <div>
             <AnimatePresence>
@@ -55,7 +54,7 @@ export default function Layout({
                   onClick={() => setShowSignInModal(true)}
                   {...FADE_IN_ANIMATION_SETTINGS}
                 >
-                  Sign In
+                  Log in
                 </motion.button>
               ) : (
                 <UserDropdown />
@@ -69,15 +68,16 @@ export default function Layout({
       </main>
       <div className="absolute w-full border-t border-gray-200 bg-white py-5 text-center">
         <p className="text-gray-500">
-          A free template by{" "}
+          Developed by @ 
           <a
             className="font-medium text-gray-800 underline transition-colors"
-            href="https://twitter.com/steventey"
+            href="https://twitter.com/smtmssctsmtmsnt"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Steven Tey
+             smtmssctsmtmsnt
           </a>
+          
         </p>
       </div>
     </>
