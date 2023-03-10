@@ -7,7 +7,7 @@ import { ReactNode } from "react";
 import useScroll from "@/lib/hooks/use-scroll";
 
 import { useEffect } from 'react'
-import io from 'Socket.io-client'
+import io from 'socket.io-client'
 let socket
 
 export default function Layout({
