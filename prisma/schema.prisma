@@ -45,6 +45,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  userStats     UserStats[]    // add this line to link the User to their UserStats
+  userInventory UserInventory[] // add this line to link the User to their UserInventory
 }
 
 model VerificationToken {
@@ -53,4 +55,32 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model UserStats {
+  id       String @id @default(cuid())
+  userId   String @unique
+  hp       Int @default(100)
+  str      Int @default(1)
+  def      Int @default(1)
+  mag      Int @default(1)
+  res      Int @default(1)
+  rng      Int @default(1)
+  eva      Int @default(1)
+  online_status Boolean @default(true)
+  rank     String @default("Student")
+  bio      String @default("Nothing to see here")
+  village  String @default("Kinyo")
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model UserInventory {
+  id       String @id @default(cuid())
+  userId   String @unique
+  slot01   String @default("Empty")
+  slot02   String @default("Empty")
+  slot03   String @default("Empty")
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
 }

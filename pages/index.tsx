@@ -4,8 +4,17 @@ import Balancer from "react-wrap-balancer";
 import { motion } from "framer-motion";
 import { FADE_DOWN_ANIMATION_VARIANTS } from "@/lib/constants";
 import Image from "next/image";
+import { useRouter } from 'next/router';
+import { useSession } from "next-auth/react"
 
 export default function Home() {
+  const {data: session, status} = useSession();
+  const router = useRouter();
+
+  if (session && status == "authenticated") {
+    //router.replace('../dashboard');
+  }
+  
   return (
     <Layout>
       <motion.div
@@ -49,9 +58,12 @@ export default function Home() {
           >
             <p>Play Now</p>
           </a>
+          
         </motion.div>
+        
       </motion.div>
       
     </Layout>
   );
+  
 }
