@@ -40,6 +40,7 @@ export const authOptions: NextAuthOptions = {
           });
         } else {
           await prisma.userStats.update({
+            //TODO:: finish implementing user stats
             where: {
               id: isNewUser.id,
             },
@@ -54,6 +55,8 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+
+  // TODO:: fix endSession - not sure this works.
   async endSession(session) {
     if(session?.user) {
       await prisma.userStats.update({

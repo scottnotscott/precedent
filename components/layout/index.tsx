@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
 import useScroll from "@/lib/hooks/use-scroll";
+import Dashboard from "../dashboard";
 
 import { useEffect } from 'react'
 import io from 'socket.io-client'
@@ -15,19 +16,32 @@ export default function Layout({
 }: {
   children: ReactNode;
 }) {
+
   const { data: session, status } = useSession();
+  const userAuthenticatedAndLoaded = session && status !== "loading";
   const scrolled = useScroll(50);
 
   useEffect(() => {
+    
     async function socketInitialiser() {
+      if(status === 'authenticated') return;
         await fetch('api/socket')
         socket = io()
 
         socket.on('connect', () => {
             console.log('Connected')
         })
+
+        socket.on('disconnect', () => {
+          
+        })
+
+        socket.on('totalusers', (data) => {
+          console.log(data)
+        })
     }
-    socketInitialiser();
+        socketInitialiser()
+    
  }, [])
   return (
     <>
@@ -73,7 +87,18 @@ export default function Layout({
         </div>
       </div>
       <main className="flex w-full flex-col items-center justify-center py-32">
-      {children}
+        
+        {
+          userAuthenticatedAndLoaded && <Dashboard/>
+        }
+        {
+          !userAuthenticatedAndLoaded && <>{children}</>
+        }
+        {
+          status == "loading" && <><p>Logging in to gameserver...</p></>
+        }
+      
+      <p>{userAuthenticatedAndLoaded}</p>
       </main>
       <div className="absolute w-full border-t border-gray-200 bg-white py-5 text-center">
         <p className="text-gray-500">
