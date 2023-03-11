@@ -11,11 +11,8 @@ import { useEffect } from 'react'
 import io from 'socket.io-client'
 let socket
 
-export default function Layout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function Layout({children}: {children: ReactNode})
+ {
 
   const { data: session, status } = useSession();
   const userAuthenticatedAndLoaded = session && status !== "loading";
@@ -89,7 +86,7 @@ export default function Layout({
       <main className="flex w-full flex-col items-center justify-center py-32">
         
         {
-          userAuthenticatedAndLoaded && <Dashboard/>
+          userAuthenticatedAndLoaded && <Dashboard userId={session.user.id}/>
         }
         {
           !userAuthenticatedAndLoaded && <>{children}</>
