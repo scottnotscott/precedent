@@ -73,6 +73,7 @@ model UserStats {
   rank     String @default("Student")
   bio      String @default("Nothing to see here")
   village  String @default("Kinyo")
+  activity Activity @default(IDLE)
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId])
 }
@@ -90,4 +91,10 @@ model UserInventory {
 model ServerInformation {
   id        String @id @default(cuid())
   version   String @default("0.01")
+}
+
+enum Activity {
+  IDLE
+  TRAINING
+  COMBAT
 }

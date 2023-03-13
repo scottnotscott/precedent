@@ -5,7 +5,6 @@ import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 
 //TODO:: add breakpoints for mobile devices so sidebar doesn't break on smaller screens
-//TODO:: implement useSWR for data fetching
 export default function Sidebar() {
     const { data: session, status } = useSession();
     const [isShown, setIsShown] = useState(false);
@@ -59,7 +58,7 @@ export default function Sidebar() {
             <div className="fixed bottom-16 text-center items-center pt-2 inline-flex px-3 px-2">
                 <i><Facebook color="pink" size={48} /></i>
             </div>
-            <div className="fixed bottom-0 text-center items-center pt-2 inline-flex px-3 px-2">
+            <div className="fixed bottom-0 text-center items-center pt-2 flex flex-col px-2 px-2">
                 {!session && 
                 <a href="http://localhost:3000/api/auth/signin?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2F">Log in</a>
                 }

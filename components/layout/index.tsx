@@ -6,6 +6,7 @@ import Sidebar from "../sidebar";
 import Footer from "../footer";
 import { ArrowDownLeft } from "lucide-react"
 import { Tooltip } from 'react-daisyui';
+import CharPanel from "../charpanel";
 
 import { useEffect } from 'react'
 import io from 'socket.io-client'
@@ -23,6 +24,7 @@ export default function Layout({children})
     
     <Sidebar />
     
+    
     <div className='flex top-10 left-0 h-screen w-screen flex-col bg-gray-700'>
                   
                 
@@ -33,6 +35,7 @@ export default function Layout({children})
         {
           userAuthenticatedAndLoaded && 
           <>
+          <CharPanel />
           <div className="flex flex-row pl-20">
           <Dashboard userId={session.user.id}/>
           
