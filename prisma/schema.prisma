@@ -67,6 +67,8 @@ model UserStats {
   res      Int @default(1)
   rng      Int @default(1)
   eva      Int @default(1)
+  level    Int @default(1)
+  exp      Int @default(0)
   online_status Boolean @default(true)
   rank     String @default("Student")
   bio      String @default("Nothing to see here")

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Dashboard from "../dashboard";
 import Sidebar from "../sidebar";
 import Footer from "../footer";
+import { ArrowDownLeft } from "lucide-react"
 
 import { useEffect } from 'react'
 import io from 'socket.io-client'
@@ -16,8 +17,12 @@ export default function Layout({children})
   const userAuthenticatedAndLoaded = session && status !== "loading";
   return (
     <>
+    <div className="flex flex-row w-screen">
+
+    
     <Sidebar />
-    <div className='content-container flex top-1 left-0 pl-20 h-screen w-screen flex-col'>
+    </div>
+    <div className='flex top-10 left-0 h-screen w-screen flex-col bg-gray-700'>
                   
                 
               
@@ -29,12 +34,19 @@ export default function Layout({children})
           <>
           <div className="flex flex-row">
           <Dashboard userId={session.user.id}/>
+          
           </div>
           </>
         }
         {
           
-          !userAuthenticatedAndLoaded && <>{children}</>
+          !userAuthenticatedAndLoaded && 
+          <>
+          {children}
+          <div className="fixed left-[54px] bottom-[16px]">
+        <ArrowDownLeft color="red" size={42} className="animate-bounce" />
+       </div>
+          </>
         }
         {
           status == "loading" && <><p>Logging in to gameserver...</p></>
