@@ -8,6 +8,11 @@ async function main() {
   await prisma.user.deleteMany();
   await prisma.userInventory.deleteMany();
   await prisma.userStats.deleteMany();
+  await prisma.serverInformation.create({
+    data: {
+      version: '0.0.1'
+    }
+  })
   // add more deleteMany calls for all tables in your database
 }
 

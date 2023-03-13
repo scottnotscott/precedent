@@ -84,3 +84,8 @@ model UserInventory {
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId])
 }
+
+model ServerInformation {
+  id        String @id @default(cuid())
+  version   String @default("0.01")
+}

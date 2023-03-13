@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
+import Layout from "./layout";
 
 export default function Dashboard({userId}) {
   const { data: session, status } = useSession();
@@ -41,5 +42,6 @@ function GetUserStats(userId) {
         <div className="bg-gray-100 p-4"><GetUserStats userId={session.user.id} /></div>
         <div className="bg-gray-100 p-4">Content 3</div>
       </main>
+      
       );
 }

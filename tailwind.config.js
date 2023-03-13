@@ -5,10 +5,13 @@ module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
+    'node_modules/daisyui/dist/**/*.js',
+    'node_modules/react-daisyui/dist/**/*.js'
   ],
   future: {
     hoverOnlyWhenSupported: true,
   },
+  darkMode: true,
   theme: {
     extend: {
       fontFamily: {
@@ -37,6 +40,7 @@ module.exports = {
     require("@tailwindcss/forms"),
     require("@tailwindcss/typography"),
     require("@tailwindcss/line-clamp"),
+    require("daisyui"),
     plugin(({ addVariant }) => {
       addVariant("radix-side-top", '&[data-side="top"]');
       addVariant("radix-side-bottom", '&[data-side="bottom"]');
