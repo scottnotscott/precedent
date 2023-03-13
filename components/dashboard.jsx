@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import useSWR from 'swr'
 import { Avatar } from 'react-daisyui';
+import { Tooltip } from 'react-daisyui';
 
 export default function Dashboard({ userId }) {
   const { data: session, status } = useSession();

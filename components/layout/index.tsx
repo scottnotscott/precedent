@@ -5,6 +5,7 @@ import Dashboard from "../dashboard";
 import Sidebar from "../sidebar";
 import Footer from "../footer";
 import { ArrowDownLeft } from "lucide-react"
+import { Tooltip } from 'react-daisyui';
 
 import { useEffect } from 'react'
 import io from 'socket.io-client'
@@ -17,11 +18,11 @@ export default function Layout({children})
   const userAuthenticatedAndLoaded = session && status !== "loading";
   return (
     <>
-    <div className="flex flex-row w-screen">
+    
 
     
     <Sidebar />
-    </div>
+    
     <div className='flex top-10 left-0 h-screen w-screen flex-col bg-gray-700'>
                   
                 
@@ -32,7 +33,7 @@ export default function Layout({children})
         {
           userAuthenticatedAndLoaded && 
           <>
-          <div className="flex flex-row">
+          <div className="flex flex-row pl-20">
           <Dashboard userId={session.user.id}/>
           
           </div>
