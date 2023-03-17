@@ -21,11 +21,11 @@ export const authOptions: NextAuthOptions = {
        include: {
         userInventory: true,
         userStats: true,
-        
        }
        });
         if (!isNewUser.userStats.length && !isNewUser.userInventory.length) {
-          console.log(prisma.userStats);
+          console.log('hello: ',isNewUser.id)
+          console.log('hello2: ', session.user.name)
           await prisma.userStats.create({
             data: {
                id: isNewUser.id,
@@ -58,6 +58,7 @@ export const authOptions: NextAuthOptions = {
 
   // TODO:: fix endSession - not sure this works.
   async endSession(session) {
+    console.log('this is called, in endsession')
     if(session?.user) {
       await prisma.userStats.update({
         where: { 

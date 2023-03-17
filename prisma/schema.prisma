@@ -98,3 +98,53 @@ enum Activity {
   TRAINING
   COMBAT
 }
+
+model Monsters {
+  id      Int @id @default(autoincrement())
+  name    String
+  monster_type    Monster_type @default(MELEE)
+  monster_rarity  Monster_rarity @default(NORMAL)
+  monster_affix   Monster_affix @default(NONE)
+  image           String?
+  level           Int @default(1)
+  base_hp         Int @default(100)
+  base_str        Int @default(1)
+  base_def        Int @default(1)
+  base_mag        Int @default(1)
+  base_res        Int @default(1)
+  base_rng        Int @default(1)
+  base_eva        Int @default(1)
+  description     String?
+  currency_reward Int @default(10)
+  item_loot_table Item_loot_table @default(GLOBAL)
+  xp_reward       Int @default(5)
+}
+
+enum Monster_type {
+  MELEE
+  RANGED
+  MAGIC
+}
+
+enum Monster_rarity {
+  NORMAL
+  RARE
+  MAGIC
+  EXOTIC
+  LEGENDARY
+}
+
+enum Monster_affix {
+  NONE
+  BERSERK
+  BRUTE
+  ANCIENT
+  NIMBLE
+}
+
+enum Item_loot_table {
+  GLOBAL
+  NORMAL
+  RARE
+  EXOTIC
+}
