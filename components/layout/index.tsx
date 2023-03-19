@@ -1,4 +1,4 @@
-import { useSession,  } from "next-auth/react";
+import { useSession, } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import Dashboard from "../dashboard";
@@ -8,58 +8,37 @@ import { ArrowDownLeft } from "lucide-react"
 import { Tooltip } from 'react-daisyui';
 import CharPanel from "../charpanel";
 
-import { useEffect } from 'react'
-import io from 'socket.io-client'
-let socket
-
-export default function Layout({children})
- {
-
+export default function Layout({ children }) {
   const { data: session, status } = useSession();
   const userAuthenticatedAndLoaded = session && status !== "loading";
   return (
     <>
-    
-
-    
-    <Sidebar />
-    
-    
-    <div className='flex top-10 left-0 h-screen w-screen flex-col bg-gray-700'>
-                  
-                
-              
-              
-          
-        
+      <Sidebar />
+      <div className='flex top-10 left-0 h-screen w-screen flex-col bg-gray-700'>
         {
-          userAuthenticatedAndLoaded && 
+          userAuthenticatedAndLoaded &&
           <>
-          <CharPanel />
-          <div className="flex flex-row pl-20">
-          <Dashboard userId={session.user.id}/>
-          
-          </div>
+            <CharPanel />
+            <div className="flex flex-row pl-20">
+              <Dashboard userId={session.user.id} />
+            </div>
           </>
         }
         {
-          
-          !userAuthenticatedAndLoaded && 
+          !userAuthenticatedAndLoaded &&
           <>
-          {children}
-          <div className="fixed left-[54px] bottom-[16px]">
-        <ArrowDownLeft color="red" size={42} className="animate-bounce" />
-       </div>
+            {children}
+            <div className="fixed left-[54px] bottom-[16px]">
+              <ArrowDownLeft color="red" size={42} className="animate-bounce" />
+            </div>
           </>
         }
         {
           status == "loading" && <><p>Logging in to gameserver...</p></>
         }
-      
-      <p>{userAuthenticatedAndLoaded}</p>
-      
-      <Footer />
-        </div>
+        <p>{userAuthenticatedAndLoaded}</p>
+        <Footer />
+      </div>
     </>
   );
 }
