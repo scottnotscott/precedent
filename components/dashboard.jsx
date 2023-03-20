@@ -6,13 +6,6 @@ import MonsterCard from "./MonsterCard";
 import BattleScreen from './BattleScreen';
 
 export default function Dashboard({ userId }) {
-  useEffect(() => {
-    const savedBattleState = localStorage.getItem('battleState');
-    if (savedBattleState) {
-      const { userStats: savedUserStats, monsterStats: savedMonsterStats } = JSON.parse(savedBattleState);
-      handleEngageClick(savedMonsterStats.id);
-    }
-  }, []);
   const [currentMonster, setCurrentMonster] = useState(null);
   const fetcher = (...args) => fetch(...args).then(res => res.json())
   const { data, error, isLoading, isValidating } = useSWR(`/api/stats?userId=${userId}`, fetcher)
@@ -23,7 +16,7 @@ export default function Dashboard({ userId }) {
   };
 
   if(error) console.log('error in dashboard: ', error)
-  if(currentMonster) return (<BattleScreen userId={userId} monsterId={currentMonster} />)
+  if(currentMonster) return (<BattleScreen userId={userId} monsterId={currentMonster} baseHP={data.hp} />)
   if(error) return(<p>{error.message}</p>)
   if(isLoading) return(<p>Loading gameversion...</p>)
   if(data) return(

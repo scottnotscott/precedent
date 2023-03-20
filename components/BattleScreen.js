@@ -2,14 +2,17 @@ import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import Image from "next/image";
+import { useSession } from "next-auth/react";
 
-const BattleScreen = ({ userId, monsterId }) => {
+const BattleScreen = ({ userId, monsterId, baseHP }) => {
   const [battleOutcome, setBattleOutcome] = useState(null);
   const [userStats, setUserStats] = useState(null);
   const [monsterStats, setMonsterStats] = useState(null);
   const [countdown, setCountdown] = useState(5);
   const [selectedMove, setSelectedMove] = useState('strength');
   const [isUpdatingHealth, setIsUpdatingHealth] = useState(false);
+  const { data: session, status } = useSession();
   let battleEnd = false;
 
   const countdownRef = useRef(countdown);
@@ -21,13 +24,7 @@ const BattleScreen = ({ userId, monsterId }) => {
   const { data: userData } = useSWR(`/api/stats?userId=${userId}`);
   useEffect(() => {
     if (userData) {
-      const savedBattleState = localStorage.getItem("battleState");
-      if (savedBattleState) {
-        const { userStats: savedUserStats } = JSON.parse(savedBattleState);
-        setUserStats(savedUserStats);
-      } else {
         setUserStats(userData);
-      }
     }
   }, [userData]);
 
@@ -105,19 +102,19 @@ const BattleScreen = ({ userId, monsterId }) => {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center justify-center">
       <h1 className="text-2xl font-bold mb-6">Battle Screen</h1>
       <div className="w-full flex flex-col md:flex-row justify-between">
         <div className="md:w-1/3 flex flex-col items-center">
           
           {userStats && (
             <>
-            <h2 className="text-xl font-semibold mb-4">User</h2>
-            <ul className="mb-4">
-              <li>Health: {userStats.hp}</li>
-              <li>Selected Move: {selectedMove}</li>
-            </ul>
+            <h2 className="text-xl font-semibold mb-4">{session?.user?.name}</h2>
+            <Image src={session?.user?.image} alt={session?.user?.name} width={250} height={250} />
+            <p>Health: {userStats.hp}/{baseHP}</p>
+            <progress className="progress progress-error w-46" value={userStats.hp} max={baseHP}></progress>
             <div>
+              <p className="pt-3">Attack Options</p>
             <input
               type="radio"
               id="strength"
@@ -126,7 +123,7 @@ const BattleScreen = ({ userId, monsterId }) => {
               checked={selectedMove === 'strength'}
               onChange={handleMoveChange}
             />
-            <label htmlFor="strength">Strength</label>
+            <label htmlFor="strength">Use Strength: {(userStats.str + 2) * 2}</label>
             <br />
             <input
               type="radio"
@@ -136,7 +133,7 @@ const BattleScreen = ({ userId, monsterId }) => {
               checked={selectedMove === 'magic'}
               onChange={handleMoveChange}
             />
-            <label htmlFor="magic">Magic</label>
+            <label htmlFor="magic">Use Magic: {(userStats.mag + 2) * 2}</label>
             <br />
             <input
               type="radio"
@@ -146,7 +143,7 @@ const BattleScreen = ({ userId, monsterId }) => {
               checked={selectedMove === 'ranged'}
               onChange={handleMoveChange}
             />
-            <label htmlFor="ranged">Ranged</label>
+            <label htmlFor="ranged">Use Ranged: {(userStats.rng + 2) * 2}</label>
           </div>
             </>
           )}
@@ -159,11 +156,11 @@ const BattleScreen = ({ userId, monsterId }) => {
           
           {monsterStats && (
             <>
-            <h2 className="text-xl font-semibold mb-4">Monster</h2>
-            <ul>
-              <li>Health: {monsterStats.hp}</li>
-              <li>Preparing Move</li>
-            </ul>
+            <h2 className="text-xl font-semibold mb-4">{monsterStats.name}</h2>
+            <Image src={monsterStats.image} alt={monsterStats?.name} width={250} height={250} />
+            <p>Health: {monsterStats.hp}/{monsterStats.base_hp}</p>
+            <progress className="progress progress-error w-46" value={monsterStats.hp} max={monsterStats.base_hp}></progress>
+            <p>Pondering next move...</p>
             </>
           )}
         </div>
