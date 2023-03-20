@@ -86,7 +86,7 @@
         "monster_affix": "NONE",
         "image": "https://i.imgur.com/Aew0Y0b.png",	
         "level": 5,	
-        "base_hp": 230,	
+        "base_hp": 50,	
         "base_str": 7,	
         "base_def": 13,	
         "base_mag": 1,
@@ -96,7 +96,7 @@
         "description": "A goblin's Dad, wielding a rather large club",	
         "currency_reward": 35,	
         "item_loot_table": "RARE",	
-        "xp_reward": 25,	
+        "xp_reward": 1000,	
         "id": 5
     },
     {

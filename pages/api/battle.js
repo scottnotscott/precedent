@@ -7,11 +7,15 @@ export default async function handler(req, res) {
     return;
   }
 
+  const expForLevel = (level) => {
+    return 1000 * (level - 1) * (level - 1);
+  };
+
   const { userStats, monsterStats, selectedMove } = req.body;
 
   const calculateUserDamage = () => {
     if (selectedMove === 'strength') {
-      return (userStats.str + 2) * 2;
+      return (userStats.str + 30) * 2;
     } else if (selectedMove === 'magic') {
       return (userStats.mag + 2) * 2;
     } else {
@@ -37,12 +41,23 @@ export default async function handler(req, res) {
   if (updatedMonsterStats.hp <= 0) {
     const winner = 'user';
     const xpGain = monsterStats.xp_reward;
-    // check users xp level, and if it meets threshhold then level the user up
+    const newExp = userStats.exp + xpGain;
+  
+    let newLevel = userStats.level;
+    while (newExp >= expForLevel(newLevel + 1)) {
+      newLevel += 1;
+    }
+  
+    const updateData = { exp: newExp };
+    if (newLevel !== userStats.level) {
+      updateData.level = newLevel;
+    }
+  
     await prisma.userStats.update({
       where: { userId: userStats.userId },
-      data: { exp: userStats.exp + xpGain },
+      data: updateData,
     });
-
+  
     res.status(200).json({ outcome: winner, updatedUserStats, updatedMonsterStats });
     return;
   }
