@@ -15,8 +15,10 @@ export default async function handler(req, res) {
 
   const calculateUserDamage = () => {
     if (selectedMove === 'strength') {
+      console.log('user=user=user=user')
       let base = (userStats.str + 2) * 2;
       let random = Math.floor(Math.random() * base);
+      console.log('USER', '\n', 'stat:', userStats.str, '\n base:', base, '\n', 'random:', random, '\n', 'calculation: ( base:', base, ' + random:', random, ' ): ', base + random);
       return base + random;
     } else if (selectedMove === 'magic') {
       let base = (userStats.mag + 2) * 2;
@@ -30,9 +32,12 @@ export default async function handler(req, res) {
   };
 
   const calculateMonsterDamage = () => {
-    let base = (monsterStats.base_str + 2) * 2;
+    console.log('mon=mon=mon=mon')
+    let base = (monsterStats.base_str + 2) * 1;
     let random = Math.floor(Math.random() * base);
     let calc = (base+random) - userStats.def
+    console.log('MONSTER', '\n', 'stat: ', monsterStats.base_str, '\n base: ', base, '\n', 'random: ', random, '\n', 'calculation: (( base:', base, ' + random:', random, ' ) - userStats.def:',userStats.def, ' ): ', calc);
+    
     return calc
   };
 

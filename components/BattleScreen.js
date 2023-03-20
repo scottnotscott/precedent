@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { Countdown } from 'react-daisyui';
 
 const BattleScreen = ({ userId, monsterId, baseHP }) => {
   const [battleOutcome, setBattleOutcome] = useState(null);
@@ -15,6 +16,7 @@ const BattleScreen = ({ userId, monsterId, baseHP }) => {
   const [userAction, setUserAction] = useState(null);
   const [monsterAction, setMonsterAction] = useState(null);
   const { data: session, status } = useSession();
+  const router = useRouter();
   let battleEnd = false;
 
   const countdownRef = useRef(countdown);
@@ -81,20 +83,15 @@ const BattleScreen = ({ userId, monsterId, baseHP }) => {
     setUserAction({ move: selectedMove, damage: userDamage });
     setMonsterAction({ move: "base_str", damage: monsterDamage });
   
-    // Save the battle state to local storage
-    localStorage.setItem('battleState', JSON.stringify({ userStats: updatedUserStats, monsterStats: updatedMonsterStats }));
-  
     if (outcome) {
       setBattleOutcome(outcome);
       battleEnd = true;
-      localStorage.removeItem('battleState'); // Remove the battle state from local storage when the battle ends
       setTimeout(() => {
-        window.location.reload();
+        router.push('/');
       }, 3000);
     } else {
       setIsUpdatingHealth(false);
       setCountdown(5);
-      localStorage.removeItem('battleState'); // Reset the countdown after updating health
     }
   };
   
@@ -115,7 +112,7 @@ const BattleScreen = ({ userId, monsterId, baseHP }) => {
           {userStats && (
             <>
             <h2 className="text-xl font-semibold mb-4">{session?.user?.name}</h2>
-            <Image src={session?.user?.image} alt={session?.user?.name} width={250} height={250} />
+            <Image src={session?.user?.image} alt={session?.user?.name} width={150} height={150} />
             <p>Health: {userStats.hp}/{baseHP}</p>
             <progress className="progress progress-error w-46" value={userStats.hp} max={baseHP}></progress>
             <div>
@@ -155,7 +152,13 @@ const BattleScreen = ({ userId, monsterId, baseHP }) => {
         </div>
         <div className="md:w-1/3 flex flex-col items-center">
           <h2 className="text-xl font-semibold mb-4">Turn Timer</h2>
-          {countdown && !battleEnd && <h3>{countdown}</h3>}
+          {countdown && !battleEnd && (
+            <>
+            <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+              <Countdown className="font-mono text-2xl" value={countdown} />
+              </div>
+            </>
+        )}
           {userAction && (
             <div>
               <p>You used {userAction.move} dealing {userAction.damage} dmg!</p>
@@ -172,7 +175,7 @@ const BattleScreen = ({ userId, monsterId, baseHP }) => {
           {monsterStats && (
             <>
             <h2 className="text-xl font-semibold mb-4">{monsterStats.name}</h2>
-            <Image src={monsterStats.image} alt={monsterStats?.name} width={250} height={250} />
+            <Image src={monsterStats.image} alt={monsterStats?.name} width={150} height={150} />
             <p>Health: {monsterStats.hp}/{monsterStats.base_hp}</p>
             <progress className="progress progress-error w-46" value={monsterStats.hp} max={monsterStats.base_hp}></progress>
             <p>Pondering next move...</p>
