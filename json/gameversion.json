@@ -1,6 +1,15 @@
 [
     {
         "id": 1,
-        "version": 0.01
+        "version": 0.02,
+        "changelog": {
+            "0.01": [
+                "Launch"
+            ],
+            "0.02": [
+                "added combat feature as server side, pushed to live for beta testing",
+                "added XP, xp_rewards and level system" 
+            ]
+        }
     }
 ]
