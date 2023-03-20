@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient()
+import prisma from "./../../prisma";
 
 export default async function handler(req, res) {
     console.log('Heartbeat -> ', req.query.userId)

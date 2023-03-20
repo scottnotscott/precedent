@@ -1,7 +1,7 @@
 [
     {
         "id": 1,
-        "version": 0.02,
+        "version": 0.03,
         "changelog": {
             "0.01": [
                 "Launch"
@@ -9,6 +9,10 @@
             "0.02": [
                 "added combat feature as server side, pushed to live for beta testing",
                 "added XP, xp_rewards and level system" 
+            ],
+            "0.03": [
+                "Levels, XP, monsters. NPC combat is live for alpha testing",
+                "Fixed major issue with client duplication"
             ]
         }
     }

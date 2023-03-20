@@ -7,10 +7,14 @@ import Footer from "../footer";
 import { ArrowDownLeft } from "lucide-react"
 import { Tooltip } from 'react-daisyui';
 import CharPanel from "../charpanel";
+import useStats from "./../../useStats"
 
 export default function Layout({ children }) {
   const { data: session, status } = useSession();
   const userAuthenticatedAndLoaded = session && status !== "loading";
+  const { data: userStats } = useStats(
+    userAuthenticatedAndLoaded ? session.user.id : null
+  );
   return (
     <>
       <Sidebar />
@@ -18,9 +22,9 @@ export default function Layout({ children }) {
         {
           userAuthenticatedAndLoaded &&
           <>
-            <CharPanel />
+            <CharPanel userStats={userStats} session={session} />
             <div className="flex flex-row pl-20">
-              <Dashboard userId={session.user.id} />
+              <Dashboard userId={session.user.id} userStats={userStats} session={session} />
             </div>
           </>
         }
