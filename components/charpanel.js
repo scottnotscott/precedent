@@ -24,7 +24,7 @@ export default function CharPanel({userId}) {
 <div className="flex flex-col items-center bg-gray-900 text-pink-300 rounded-md">
         <div className="flex flex-row items-center  text-white-900 mb-2"> <h3 className="text-white">Character Sheet</h3> </div>
         <div className="flex flex-row items-center"> <Avatar  size="lg" src={session.user.image} /> </div>
-            <p>Name: {session.user.name}</p>
+        <p>Name:<div className="bg-[url('https://media1.giphy.com/media/3ohhwBrZCQBtmVA91K/giphy.gif')]">{session.user.name}</div></p>
             <p>XP: {data.exp}</p>
             <p>Level: {data.level}</p>
             <p>Rank: {data.rank}</p>

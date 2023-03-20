@@ -1,11 +1,18 @@
 import { useSession } from "next-auth/react";
 import useSWR from 'swr'
 import { Sword } from "lucide-react"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MonsterCard from "./MonsterCard";
 import BattleScreen from './BattleScreen';
 
 export default function Dashboard({ userId }) {
+  useEffect(() => {
+    const savedBattleState = localStorage.getItem('battleState');
+    if (savedBattleState) {
+      const { userStats: savedUserStats, monsterStats: savedMonsterStats } = JSON.parse(savedBattleState);
+      handleEngageClick(savedMonsterStats.id);
+    }
+  }, []);
   const [currentMonster, setCurrentMonster] = useState(null);
   const fetcher = (...args) => fetch(...args).then(res => res.json())
   const { data, error, isLoading, isValidating } = useSWR(`/api/stats?userId=${userId}`, fetcher)
@@ -30,7 +37,7 @@ export default function Dashboard({ userId }) {
             <div className="flex flex-row ml-2 space-x-6">
               <MonsterCard id={4} onEngageClick={handleEngageClick} />
               <MonsterCard id={5} onEngageClick={handleEngageClick} />
-              <MonsterCard id={1} onEngageClick={handleEngageClick} />
+              <MonsterCard id={6} onEngageClick={handleEngageClick} />
             </div>
             </div>
             </>

@@ -60,7 +60,7 @@ export default function Sidebar() {
             </div>
             <div className="fixed bottom-0 text-center items-center pt-2 flex flex-col px-2 px-2">
                 {!session && 
-                <a href="http://localhost:3000/api/auth/signin?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2F">Log in</a>
+                <a href="http://precedent-theta-tawny.vercel.app/api/auth/signin?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2F">Log in</a>
                 }
 
                 {session && 

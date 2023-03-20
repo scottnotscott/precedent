@@ -1,8 +1,9 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient()
+import path from 'path';
+import { promises as fs } from 'fs';
 
 export default async function handler(req, res) {
-    console.log('req:gameversion by: ', req.query.userId)
-    const gameversion = await prisma.serverInformation.findMany()
-    res.status(200).json(gameversion)
+  const jsonDirectory = path.join(process.cwd(), 'json');
+  const fileContents = await fs.readFile(jsonDirectory + '/gameversion.json', 'utf8');
+  const gameversion = JSON.parse(fileContents);
+  res.status(200).json(gameversion);
 }
