@@ -105,7 +105,7 @@ const BattleScreen = ({ userId, monsterId, baseHP }) => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <h1 className="text-2xl font-bold mb-6">Battle Screen</h1>
+      <h1 className="text-2xl font-bold mb-6">BattleScreen - This is in alpha! Can you cheat the system?</h1>
       <div className="w-full flex flex-col md:flex-row justify-between">
         <div className="md:w-1/3 flex flex-col items-center">
           
