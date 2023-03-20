@@ -5,6 +5,7 @@ import axios from 'axios';
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Countdown } from 'react-daisyui';
+import useMonsters  from './../useMonsters';
 
 const BattleScreen = ({ userId, monsterId, baseHP }) => {
   const [battleOutcome, setBattleOutcome] = useState(null);
@@ -32,18 +33,10 @@ const BattleScreen = ({ userId, monsterId, baseHP }) => {
     }
   }, [userData]);
 
-  const { data: monstersData } = useSWR(`/api/monsters`);
-  const monsterData = monstersData && monstersData.find(monster => monster.id === monsterId);
+const { monsterData, isLoading, error } = useMonsters(monsterId);
   useEffect(() => {
     if (monsterData) {
-      const savedBattleState = localStorage.getItem("battleState");
-      if (savedBattleState) {
-        const { monsterStats: savedMonsterStats } = JSON.parse(savedBattleState);
-        savedMonsterStats.hp = savedMonsterStats.base_hp
-        setMonsterStats(savedMonsterStats);
-      } else {
         setMonsterStats({ ...monsterData, hp: monsterData.base_hp }); // Add this line
-      }
     }
   }, [monsterData]);
   
