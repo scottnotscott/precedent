@@ -15,16 +15,25 @@ export default async function handler(req, res) {
 
   const calculateUserDamage = () => {
     if (selectedMove === 'strength') {
-      return (userStats.str + 30) * 2;
+      let base = (userStats.str + 2) * 2;
+      let random = Math.floor(Math.random() * base);
+      return base + random;
     } else if (selectedMove === 'magic') {
-      return (userStats.mag + 2) * 2;
+      let base = (userStats.mag + 2) * 2;
+      let random = Math.floor(Math.random() * base);
+      return base + random;
     } else {
-      return (userStats.rng + 2) * 2;
+      let base = (userStats.rng + 2) * 2;
+      let random = Math.floor(Math.random() * base);
+      return base + random;
     }
   };
 
   const calculateMonsterDamage = () => {
-    return (monsterStats.base_str + 2) * 2;
+    let base = (monsterStats.base_str + 2) * 2;
+    let random = Math.floor(Math.random() * base);
+    let calc = (base+random) - userStats.def
+    return calc
   };
 
   const updatedUserStats = { ...userStats };
@@ -50,7 +59,13 @@ export default async function handler(req, res) {
   
     const updateData = { exp: newExp };
     if (newLevel !== userStats.level) {
-      updateData.level = newLevel;
+      updateData.level = newLevel; 
+      updateData.str = userStats.str + Math.floor(Math.random() * userStats.level) + 1;
+      updateData.mag = userStats.mag + Math.floor(Math.random() * userStats.level) + 1;
+      updateData.rng = userStats.rng + Math.floor(Math.random() * userStats.level) + 1;
+      updateData.def = userStats.def + Math.floor(Math.random() * userStats.level) + 1;
+      updateData.res = userStats.res + Math.floor(Math.random() * userStats.level) + 1;
+      updateData.eva = userStats.eva + Math.floor(Math.random() * userStats.level) + 1;
     }
   
     await prisma.userStats.update({
@@ -73,5 +88,5 @@ export default async function handler(req, res) {
   }
 
   // No winner yet
-  res.status(200).json({ outcome: null, updatedUserStats, updatedMonsterStats });
+  res.status(200).json({ outcome: null, updatedUserStats, updatedMonsterStats, userDamage, monsterDamage });
 }

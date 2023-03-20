@@ -12,6 +12,8 @@ const BattleScreen = ({ userId, monsterId, baseHP }) => {
   const [countdown, setCountdown] = useState(5);
   const [selectedMove, setSelectedMove] = useState('strength');
   const [isUpdatingHealth, setIsUpdatingHealth] = useState(false);
+  const [userAction, setUserAction] = useState(null);
+  const [monsterAction, setMonsterAction] = useState(null);
   const { data: session, status } = useSession();
   let battleEnd = false;
 
@@ -72,9 +74,12 @@ const BattleScreen = ({ userId, monsterId, baseHP }) => {
       selectedMove,
     });
   
-    const { outcome, updatedUserStats, updatedMonsterStats } = response.data;
+    const { outcome, updatedUserStats, updatedMonsterStats, userDamage, monsterDamage } = response.data;
     setUserStats(updatedUserStats);
     setMonsterStats(updatedMonsterStats);
+
+    setUserAction({ move: selectedMove, damage: userDamage });
+    setMonsterAction({ move: "base_str", damage: monsterDamage });
   
     // Save the battle state to local storage
     localStorage.setItem('battleState', JSON.stringify({ userStats: updatedUserStats, monsterStats: updatedMonsterStats }));
@@ -151,6 +156,16 @@ const BattleScreen = ({ userId, monsterId, baseHP }) => {
         <div className="md:w-1/3 flex flex-col items-center">
           <h2 className="text-xl font-semibold mb-4">Turn Timer</h2>
           {countdown && !battleEnd && <h3>{countdown}</h3>}
+          {userAction && (
+            <div>
+              <p>You used {userAction.move} dealing {userAction.damage} dmg!</p>
+            </div>
+          )}
+          {monsterAction && (
+            <div>
+              <p>{monsterStats.name} attacked for {monsterAction.damage} dmg!</p>
+            </div>
+          )}
         </div>
         <div className="md:w-1/3 flex flex-col items-center">
           

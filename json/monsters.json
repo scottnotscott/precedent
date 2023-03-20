@@ -87,7 +87,7 @@
         "image": "https://i.imgur.com/Aew0Y0b.png",	
         "level": 5,	
         "base_hp": 50,	
-        "base_str": 7,	
+        "base_str": 3,	
         "base_def": 13,	
         "base_mag": 1,
         "base_res": 4,
