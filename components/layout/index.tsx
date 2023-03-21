@@ -19,21 +19,24 @@ export default function Layout({ children }) {
       return React.cloneElement(child, { userStats, session });
     });
   };
+
   return (
     <>
       {session && <Sidebar session={session} />}
-      <div className="flex h-screen w-screen">
-        <div className="flex flex-col flex-grow bg-gray-700">
-          {session ? (
-            <>
-              <CharPanel userStats={userStats} session={session} />
-              {renderChildren()}
-            </>
-          ) : (
-            children
-          )}
-          <Footer />
-        </div>
+      <div
+        className={`${
+          session ? "w-auto ml-24 h-screen" : "w-full h-screen"
+        } flex flex-col bg-gray-700`}
+      >
+        {session ? (
+          <>
+            <CharPanel userStats={userStats} session={session} />
+            {renderChildren()}
+          </>
+        ) : (
+          children
+        )}
+        <Footer />
       </div>
     </>
   );
