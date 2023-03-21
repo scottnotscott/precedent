@@ -54,14 +54,7 @@ export default function Sidebar() {
         <i><Swords color="pink" size={28} /></i>
         </Tooltip>
         <div className="mt-2"></div>
-
-            <div className="fixed bottom-16 text-center items-center pt-2 inline-flex px-3 px-2">
-                <i><Facebook color="pink" size={48} /></i>
-            </div>
             <div className="fixed bottom-0 text-center items-center pt-2 flex flex-col px-2 px-2">
-                {!session && 
-                <a href="http://precedent-theta-tawny.vercel.app/api/auth/signin?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2F">Log in</a>
-                }
 
                 {session && 
                 <>

@@ -23,7 +23,7 @@ export default function Layout({ children }) {
           userAuthenticatedAndLoaded &&
           <>
             <CharPanel userStats={userStats} session={session} />
-            <div className="flex flex-row pl-20">
+            <div className="flex flex-row pl-20 pr-72">
               <Dashboard userId={session.user.id} userStats={userStats} session={session} />
             </div>
           </>
@@ -31,9 +31,10 @@ export default function Layout({ children }) {
         {
           !userAuthenticatedAndLoaded &&
           <>
+          <div class="flex-grow ml-24">
+
+          
             {children}
-            <div className="fixed left-[54px] bottom-[16px]">
-              <ArrowDownLeft color="red" size={42} className="animate-bounce" />
             </div>
           </>
         }
