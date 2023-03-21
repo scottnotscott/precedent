@@ -16,13 +16,13 @@ export default function Sidebar() {
 
 
     return (
-        <div className="fixed top-0 left-0 h-screen w-16 m-0 
-                        flex flex-col
-                        bg-gray-900 text-white shadow-lg
-                        px-3 px-2 inline-flex items-center pt-2">
+        <div className="h-screen w-24
+        flex flex-col
+        bg-gray-900 text-white shadow-lg
+        p-3 items-center">
 
             <Tooltip message="Game logo. Returns to home." position="right" onMouseEnter={trigger} >
-                <Cherry color="red" size={48} />
+                <Image src="https://i.imgur.com/RUCEyc5.png" alt="feudal logo" width="50" height="50" />
             </Tooltip>
 
             <div className="mt-12"></div>
@@ -60,11 +60,11 @@ export default function Sidebar() {
                 <i><Swords color="pink" size={28} /></i>
             </Tooltip>
             <div className="mt-2"></div>
-            <div className="fixed bottom-0 text-center items-center pt-2 flex flex-col px-2 px-2">
+            <div className="fixed bottom-0 text-center items-center pt-2 flex flex-col pr-6">
 
                 {session &&
                     <>
-                        <div className="flex flex-col items-center">
+                        <div className="flex flex-col items-center mb-10">
                             <Image src={session?.user?.image} alt={session?.user?.name} width="30" height="30" />
                             <p onClick={() => signOut({ redirect: false })}>Sign Out</p>
                         </div>

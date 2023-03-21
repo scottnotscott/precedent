@@ -18,7 +18,7 @@ export default function Monsters({ userStats, session }) {
   return (
     <>
       <div className="flex flex-col space-y-3 items-center container pt-28">
-        <div className="flex flex-row ml-2 space-x-6">
+        <div className="flex flex-row ml-3 space-x-6">
     {console.log("Monsters userStats:", userStats)}
           <MonsterCard id={1} onEngageClick={handleEngageClick} />
           <MonsterCard id={2} onEngageClick={handleEngageClick} />

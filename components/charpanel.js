@@ -12,10 +12,10 @@ export default function CharPanel({ userStats, session }) {
     }
     return (
 
-        <div className="fixed top-0 right-0 h-screen w-64 m-0 
-                flex flex-col
-              bg-gray-900 text-white shadow-lg
-                px-3 px-2 inline-flex items-center pt-2">
+        <div className="h-screen w-64
+        flex flex-col
+      bg-gray-900 text-white shadow-lg
+        p-3 items-center">
             <div className="flex flex-col items-center bg-gray-900 text-pink-300 rounded-md">
                 <div className="flex flex-row items-center  text-white-900 mb-2"> <h3 className="text-white">Character Sheet</h3> </div>
                 <div className="flex flex-row items-center"> <Avatar size="lg" src={session.user.image} /> </div>
@@ -41,7 +41,13 @@ export default function CharPanel({ userStats, session }) {
             <div className="mt-2"></div>
             <div className="flex flex-row items-center text-white mb-2"> <p>Current Activity </p> </div>
             <div className="mt-2"></div>
-            <ActivityHeartbeat />
+            {userStats.activity == 'COMBAT' && (
+                <div className="flex flex-row items-center text-red mb-2"> <p>{userStats.activity}</p></div>
+            ) }
+            {userStats.activity !== 'COMBAT' && (
+                <div className="flex flex-row items-center text-green-700 mb-2"> <p>{userStats.activity}</p></div>
+            )}
+           
 
 
 

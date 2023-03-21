@@ -21,23 +21,11 @@ export default function Layout({ children }) {
   };
 
   return (
-    <>
+    <div className={`flex min-h-screen bg-gray-700 ${!session ? "justify-center" : ""}`}>
       {session && <Sidebar session={session} />}
-      <div
-        className={`${
-          session ? "w-auto ml-24 h-screen" : "w-full h-screen"
-        } flex flex-col bg-gray-700`}
-      >
-        {session ? (
-          <>
-            <CharPanel userStats={userStats} session={session} />
-            {renderChildren()}
-          </>
-        ) : (
-          children
-        )}
-        <Footer />
-      </div>
-    </>
+      <div className={`flex-grow flex flex-col ${session ? "w-full" : "w-screen"}`}>{renderChildren()}</div>
+      {session && <CharPanel userStats={userStats} session={session} />}
+      <Footer />
+    </div>
   );
 }

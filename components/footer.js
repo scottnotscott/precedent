@@ -3,7 +3,7 @@ import useGameVersion from '../useGameVersion'
 export default function Footer() {
   const { data, error, isLoading } = useGameVersion()
   return (
-    <footer className="fixed bottom-0 flex flex-row bg-gray-900 w-screen left-16 text-pink-300 pl-4 space-x-4">
+    <footer className="fixed bottom-0 flex flex-row bg-gray-900 w-screen justify-center text-pink-300 pl-4 space-x-4">
       <p>
         Developed by @
         <a

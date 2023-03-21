@@ -5,6 +5,7 @@ import { useState } from 'react';
 import useStats from "./../useStats"
 import {useSession} from "next-auth/react"
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   const { data, error, isLoading } = useGameVersion();
@@ -27,12 +28,12 @@ export default function Home() {
   if (isLoading) return (<p>Loading...</p>)
   return (
     <>
-      <div className="mt-8"></div>
-      <Hero className="flex-grow pr-72 h-5/6 w-full">
+      
+      <Hero className="flex-grow ">
         <Hero.Overlay className="bg-opacity-60" />
         <Hero.Content className="text-center">
           <div className="max-w-md">
-            <h1 className="text-5xl font-bold">Feudal version {data[0].version}</h1>
+          <Image src="https://i.imgur.com/C5KKWec.png" alt="feudal logo" width="490" height="186" />
             <p className="py-6">
               This is a procedural browser-based massively multiplayer role-playing game.
             </p>
