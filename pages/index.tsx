@@ -2,6 +2,9 @@ import Layout from "@/components/layout";
 import { Hero, Button, Divider, Table } from 'react-daisyui'
 import useGameVersion from "../useGameVersion";
 import { useState } from 'react';
+import useStats from "./../useStats"
+import {useSession} from "next-auth/react"
+import Link from "next/link";
 
 export default function Home() {
   const { data, error, isLoading } = useGameVersion();
