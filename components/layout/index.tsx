@@ -22,19 +22,18 @@ export default function Layout({ children }) {
   return (
     <>
       {session && <Sidebar session={session} />}
-      <div
-        className="flex top-10 left-0 h-screen w-screen flex-col bg-gray-700"
-        style={!session ? { width: '100%', left: 0 } : {}}
-      >
-        {session ? (
-          <>
-            <CharPanel userStats={userStats} session={session} />
-            {renderChildren()}
-          </>
-        ) : (
-          children
-        )}
-        <Footer />
+      <div className="flex h-screen w-screen">
+        <div className="flex flex-col flex-grow bg-gray-700">
+          {session ? (
+            <>
+              <CharPanel userStats={userStats} session={session} />
+              {renderChildren()}
+            </>
+          ) : (
+            children
+          )}
+          <Footer />
+        </div>
       </div>
     </>
   );

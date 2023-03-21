@@ -26,7 +26,7 @@ export default function Home() {
 
   if (isLoading) return (<p>Loading...</p>)
   return (
-    <Layout>
+    <>
       <div className="mt-8"></div>
       <Hero className="flex-grow pr-72 h-5/6 w-full">
         <Hero.Overlay className="bg-opacity-60" />
@@ -134,6 +134,6 @@ export default function Home() {
           </div>
         </Hero.Content>
       </Hero>
-    </Layout>
+    </>
   );
 }
