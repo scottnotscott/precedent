@@ -18,7 +18,7 @@ export default function Home() {
 
   function handleClickAlpha(e) {
     e.preventDefault();
-    window.location.href = 'http://precedent-theta-tawny.vercel.app/api/auth/signin?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2F'
+    window.location.href = 'http://feudal.world/api/auth/signin?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2F'
   }
 
   function handleTabClick(tabNumber) {
