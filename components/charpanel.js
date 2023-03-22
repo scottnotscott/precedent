@@ -22,13 +22,13 @@ export default function CharPanel({ userStats, session, userInventory }) {
                 <div className="flex flex-row items-center"> <Avatar size="lg" src={session.user.image} /> </div>
                 <p>Name:<div className="bg-[url('https://media1.giphy.com/media/3ohhwBrZCQBtmVA91K/giphy.gif')]">{session.user.name}</div></p>
                 <p>
-  XP: {userStats.exp}/
+                {userStats.exp}/
   {userStats.level !== 1 ? (
     1000 * (userStats.level - 1) * (userStats.level - 1)
   ) : (
     1000 * userStats.level * userStats.level
   )}
-</p>
+xp</p>
                 <p>Level: {userStats.level}</p>
                 <p>Rank: {userStats.rank}</p>
                 <p>Village: {userStats.village}</p>

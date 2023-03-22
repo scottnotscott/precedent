@@ -1,4 +1,4 @@
-import { Home, Cherry, Beer, Eye, Facebook, Globe2, Sword, Swords } from "lucide-react"
+import { Home, Cherry, Beer, Eye, Facebook, Globe2, Sword, Swords, Lock } from "lucide-react"
 import { useState } from "react";
 import { Tooltip } from 'react-daisyui';
 import { useSession, signOut } from "next-auth/react";
@@ -20,35 +20,36 @@ export default function Sidebar() {
         flex flex-col
         bg-gray-900 text-white shadow-lg
         p-3 items-center">
-
+            <Link href="/">
             <Tooltip message="Game logo. Returns to home." position="right" onMouseEnter={trigger} >
                 <Image src="https://i.imgur.com/RUCEyc5.png" alt="feudal logo" width="50" height="50" />
             </Tooltip>
-
+            </Link>
             <div className="mt-12"></div>
-
-            <Tooltip message="Return to your home." position="right" onMouseEnter={trigger} >
+            <Link href="/">
+            <Tooltip message="Return home" position="right" onMouseEnter={trigger} >
                 <i><Home color="pink" size={28} /></i>
             </Tooltip>
+            </Link>
             <div className="mt-2"></div>
-            <Tooltip message="Visit your town." position="right" onMouseEnter={trigger} >
-                <i><Beer color="pink" size={28} /></i>
+            <Tooltip message="Visit town" position="right" onMouseEnter={trigger} >
+                <i><Lock color="pink" size={28} /></i>
             </Tooltip>
             <div className="mt-2"></div>
-            <Tooltip message="Scout for players." position="right" onMouseEnter={trigger} >
-                <i><Eye color="pink" size={28} /></i>
+            <Tooltip message="Scout for players" position="right" onMouseEnter={trigger} >
+                <i><Lock color="pink" size={28} /></i>
             </Tooltip>
 
             <div className="mt-12"></div>
 
-            <Tooltip message="Happenings around the world." position="right" onMouseEnter={trigger} >
-                <i><Globe2 color="pink" size={28} /></i>
+            <Tooltip message="Happenings around the world" position="right" onMouseEnter={trigger} >
+                <i><Lock color="pink" size={28} /></i>
             </Tooltip>
             <div className="mt-2"></div>
 
             <Link href="/colosseum">
 
-                <Tooltip message="Enter the Colosseum." position="right" onMouseEnter={trigger}>
+                <Tooltip message="Enter the Colosseum" position="right" onMouseEnter={trigger}>
                     <i>
                         <Sword color="pink" size={28} />
                     </i>
@@ -56,8 +57,8 @@ export default function Sidebar() {
             </Link>
             <div className="mt-2"></div>
 
-            <Tooltip message="Enter the PVP Colosseum." position="right" onMouseEnter={trigger} >
-                <i><Swords color="pink" size={28} /></i>
+            <Tooltip message="Enter the PVP Colosseum" position="right" onMouseEnter={trigger} >
+                <i><Lock color="pink" size={28} /></i>
             </Tooltip>
             <div className="mt-2"></div>
             <div className="fixed bottom-0 text-center items-center pt-2 flex flex-col pr-6">
