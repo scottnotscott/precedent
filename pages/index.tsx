@@ -75,25 +75,30 @@ export default function Home() {
                 <div className="mt-4">
                   <Table compact={true}>
                     <Table.Head>
-                      <span>Id</span>
+                      
                       <span>Version</span>
                       <span>Changes</span>
 
                     </Table.Head>
 
                     <Table.Body>
-                      <Table.Row>
-                        <span>1</span>
+                    <Table.Row>
+                        
                         <span>{data[0].version}</span>
+                        <span>{data[0].changelog['0.04']}</span>
+                      </Table.Row>
+                      <Table.Row>
+                        
+                        <span>0.03</span>
                         <span>{data[0].changelog['0.03']}</span>
                       </Table.Row>
                       <Table.Row>
-                        <span>2</span>
+                        
                         <span>0.02</span>
                         <span>{data[0].changelog['0.02']}</span>
                       </Table.Row>
                       <Table.Row>
-                        <span>3</span>
+                        
                         <span>0.01</span>
                         <span>{data[0].changelog['0.01']}</span>
                       </Table.Row>
@@ -114,17 +119,17 @@ export default function Home() {
                     <Table.Body>
                       <Table.Row>
                         <span>Now</span>
-                        <span>0.04</span>
+                        <span>0.08</span>
                         <span>Diplomacy, village ownership, role-playing features</span>
                       </Table.Row>
                       <Table.Row>
                         <span>Soon</span>
-                        <span>0.05</span>
+                        <span>0.09</span>
                         <span>Trainable skills to facilitate economy system</span>
                       </Table.Row>
                       <Table.Row>
                         <span>Later</span>
-                        <span>0.06</span>
+                        <span>0.10</span>
                         <span>Economy</span>
                       </Table.Row>
                     </Table.Body>

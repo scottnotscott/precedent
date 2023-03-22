@@ -1,18 +1,23 @@
 [
     {
         "id": 1,
-        "version": 0.03,
+        "version": 0.04,
         "changelog": {
             "0.01": [
-                "Alpha Launch with isolated functionality"
+                "- Alpha Launch with isolated functionality "
             ],
             "0.02": [
-                "added combat feature as server side, pushed to live for beta testing. ",
-                "added XP, xp_rewards and level system" 
+                "- Added serverside combat ",
+                "- added XP, xp_rewards and level system " 
             ],
             "0.03": [
-                "Levels, XP, monsters. NPC combat is live for alpha testing. ",
-                "Fixed major issue with client duplication"
+                "- Levels, XP, monsters. NPC combat is live for alpha testing ",
+                "- Fixed major issue with client duplication "
+            ],
+            "0.04": [
+                " - Added in-game items ",
+                " - Added in-game inventory to hold items ",
+                " - Added in-game loot tables specific to source of item "
             ]
         }
     }
