@@ -51,7 +51,7 @@ export default function MonsterCard({ id, onEngageClick }) {
   }
 
   if (error) {
-    console.log('error caught in activityheartbeat-component: ', error);
+    console.log('error caught in monster-component: ', error);
   }
 
   if (isValidating) {

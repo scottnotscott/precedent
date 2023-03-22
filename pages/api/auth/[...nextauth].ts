@@ -24,8 +24,7 @@ export const authOptions: NextAuthOptions = {
        }
        });
         if (!isNewUser.userStats.length && !isNewUser.userInventory.length) {
-          console.log('hello: ',isNewUser.id)
-          console.log('hello2: ', session.user.name)
+          console.log('hello: ', session.user.name)
           await prisma.userStats.create({
             data: {
                id: isNewUser.id,
@@ -55,22 +54,6 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-
-  // TODO:: fix endSession - not sure this works.
-  async endSession(session) {
-    console.log('this is called, in endsession')
-    if(session?.user) {
-      await prisma.userStats.update({
-        where: { 
-          id: session.user.id 
-      },
-      data: {
-        online_status: false
-      }
-      })
-    }
-  }
-
 };
 
 export default NextAuth(authOptions);

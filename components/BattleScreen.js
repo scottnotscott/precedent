@@ -1,20 +1,23 @@
 import { useRouter } from 'next/router';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Image from "next/image";
-import { Countdown } from 'react-daisyui';
+import { Countdown, Alert } from 'react-daisyui';
 import useMonsters from './../useMonsters';
 
-const BattleScreen = ({ monsterId, baseHP, session }) => {
+
+
+const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
   const [battleOutcome, setBattleOutcome] = useState(null);
   const [userStats, setUserStats] = useState(null);
   const [monsterStats, setMonsterStats] = useState(null);
   const [countdown, setCountdown] = useState(5);
-  const [selectedMove, setSelectedMove] = useState('strength');
+  const [selectedMove, setSelectedMove] = useState('str');
   const [isUpdatingHealth, setIsUpdatingHealth] = useState(false);
   const [userAction, setUserAction] = useState(null);
   const [monsterAction, setMonsterAction] = useState(null);
+  const [rewardedItem, setRewardedItem] = useState(null);
   const router = useRouter();
   let battleEnd = false;
 
@@ -24,7 +27,7 @@ const BattleScreen = ({ monsterId, baseHP, session }) => {
     countdownRef.current = countdown;
   }, [countdown]);
 
-  const { data: userData } = useSWR(`/api/stats?userId=${session.user.id}`);
+  const { data: userData, mutate } = useSWR(`/api/stats?userId=${session.user.id}`);
   useEffect(() => {
     if (userData) {
       setUserStats(userData);
@@ -34,10 +37,10 @@ const BattleScreen = ({ monsterId, baseHP, session }) => {
   const { data: monsterData } = useMonsters(monsterId);
   useEffect(() => {
     if (monsterData) {
+      console.log(monsterData)
       setMonsterStats({ ...monsterData, hp: monsterData.base_hp });
     }
   }, [monsterData]);
-
 
   useEffect(() => {
     if (userStats && monsterStats && !battleEnd) {
@@ -58,7 +61,12 @@ const BattleScreen = ({ monsterId, baseHP, session }) => {
     }
   }, [userStats, monsterStats, countdown, isUpdatingHealth]);
 
-
+  useEffect(() => {
+    if(battleOutcome) {
+      onBattleEnd();
+      mutate();
+    }
+  }, [battleOutcome])
 
   const runBattle = async () => {
     const response = await axios.post('/api/battle', {
@@ -67,7 +75,7 @@ const BattleScreen = ({ monsterId, baseHP, session }) => {
       selectedMove,
     });
 
-    const { outcome, updatedUserStats, updatedMonsterStats, userDamage, monsterDamage } = response.data;
+    const { outcome, updatedUserStats, updatedMonsterStats, userDamage, monsterDamage, item } = response.data;
     setUserStats(updatedUserStats);
     setMonsterStats(updatedMonsterStats);
 
@@ -76,20 +84,15 @@ const BattleScreen = ({ monsterId, baseHP, session }) => {
 
     if (outcome) {
       setBattleOutcome(outcome);
+      if(outcome === "user") {
+        setRewardedItem(item);
+      }
       battleEnd = true;
-      setTimeout(() => {
-        router.push('/');
-      }, 3000);
     } else {
       setIsUpdatingHealth(false);
       setCountdown(5);
     }
   };
-
-
-
-
-
   const handleMoveChange = (e) => {
     setSelectedMove(e.target.value);
   };
@@ -110,33 +113,33 @@ const BattleScreen = ({ monsterId, baseHP, session }) => {
                 <p className="pt-3">Attack Options</p>
                 <input
                   type="radio"
-                  id="strength"
+                  id="str"
                   name="move"
-                  value="strength"
-                  checked={selectedMove === 'strength'}
+                  value="str"
+                  checked={selectedMove === 'str'}
                   onChange={handleMoveChange}
                 />
-                <label htmlFor="strength">Use Strength: {(userStats.str + 2) * 2}</label>
+                <label htmlFor="str">Use Strength: {(userStats.str * 3) * 2}</label>
                 <br />
                 <input
                   type="radio"
-                  id="magic"
+                  id="mag"
                   name="move"
-                  value="magic"
-                  checked={selectedMove === 'magic'}
+                  value="mag"
+                  checked={selectedMove === 'mag'}
                   onChange={handleMoveChange}
                 />
-                <label htmlFor="magic">Use Magic: {(userStats.mag + 2) * 2}</label>
+                <label htmlFor="mag">Use Magic: {(userStats.mag * 3) * 2}</label>
                 <br />
                 <input
                   type="radio"
-                  id="ranged"
+                  id="rng"
                   name="move"
-                  value="ranged"
-                  checked={selectedMove === 'ranged'}
+                  value="rng"
+                  checked={selectedMove === 'rng'}
                   onChange={handleMoveChange}
                 />
-                <label htmlFor="ranged">Use Ranged: {(userStats.rng + 2) * 2}</label>
+                <label htmlFor="rng">Use Ranged: {(userStats.rng * 3) * 2}</label>
               </div>
             </>
           )}
@@ -177,12 +180,10 @@ const BattleScreen = ({ monsterId, baseHP, session }) => {
       {battleOutcome && (
         <div className="mt-6">
           <h2 className="text-xl font-semibold mb-4">{battleOutcome === 'user' ? 'You won!' : 'You lost!'}</h2>
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => window.location.reload()}
-          >
-            Return to Dashboard
-          </button>
+          {battleOutcome === "user" && rewardedItem && (
+            <Alert status={'success'}>You have received {rewardedItem.name} x1 as a reward.</Alert>
+          )}
+          <p>Returning to dashboard...</p>
         </div>
       )}
     </div>

@@ -1,12 +1,13 @@
 import Image from "next/image";
 import { Avatar } from 'react-daisyui';
-import ActivityHeartbeat from "./activityheartbeat";
 
-export default function CharPanel({ userStats, session }) {
+export default function CharPanel({ userStats, session, userInventory }) {
+    console.log('user inventory: ', userInventory)
+
     if (!userStats) {
         return (
             <div className="flex items-center justify-center h-screen">
-                <p>Loading stats...</p>
+                <p>Loading character...</p>
             </div>
         )
     }
@@ -20,7 +21,14 @@ export default function CharPanel({ userStats, session }) {
                 <div className="flex flex-row items-center  text-white-900 mb-2"> <h3 className="text-white">Character Sheet</h3> </div>
                 <div className="flex flex-row items-center"> <Avatar size="lg" src={session.user.image} /> </div>
                 <p>Name:<div className="bg-[url('https://media1.giphy.com/media/3ohhwBrZCQBtmVA91K/giphy.gif')]">{session.user.name}</div></p>
-                <p>XP: {userStats.exp}</p>
+                <p>
+  XP: {userStats.exp}/
+  {userStats.level !== 1 ? (
+    1000 * (userStats.level - 1) * (userStats.level - 1)
+  ) : (
+    1000 * userStats.level * userStats.level
+  )}
+</p>
                 <p>Level: {userStats.level}</p>
                 <p>Rank: {userStats.rank}</p>
                 <p>Village: {userStats.village}</p>
@@ -43,24 +51,29 @@ export default function CharPanel({ userStats, session }) {
             <div className="mt-2"></div>
             {userStats.activity == 'COMBAT' && (
                 <div className="flex flex-row items-center text-red mb-2"> <p>{userStats.activity}</p></div>
-            ) }
+            )}
             {userStats.activity !== 'COMBAT' && (
                 <div className="flex flex-row items-center text-green-700 mb-2"> <p>{userStats.activity}</p></div>
             )}
-           
-
-
-
-
-
-
-
-
-
-
-
-
-
+            <div className="mt-2"></div>
+            <div className="mt-2"></div>
+            <p>Inventory</p>
+            {userInventory && (
+                <>
+                    {Object.entries(userInventory)
+                        .filter(([key]) => key.startsWith("slot"))
+                        .map(([key, slot]) => {
+                            if (slot) {
+                                return (
+                                    <p key={key}>
+                                        {slot.name} x{slot.quantity}
+                                    </p>
+                                );
+                            }
+                            return null;
+                        })}
+                </>
+            )}
             <div className="fixed bottom-0 text-center items-center pt-2 flex flex-col px-2 px-2">
                 {!session &&
                     <a href="http://localhost:3000/api/auth/signin?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2F">Log in</a>

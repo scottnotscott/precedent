@@ -1,5 +1,15 @@
 import prisma from "./../../prisma";
 
+async function getLootTableTypeIdByName(name) {
+  const lootTableType = await prisma.lootTableType.findFirst({
+    where: {
+      name: name,
+    },
+  });
+
+  return lootTableType?.id;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -12,32 +22,33 @@ export default async function handler(req, res) {
 
   const { userStats, monsterStats, selectedMove } = req.body;
 
-  const calculateUserDamage = () => {
-    if (selectedMove === 'strength') {
-      console.log('user=user=user=user')
-      let base = (userStats.str + 2) * 2;
-      let random = Math.floor(Math.random() * base);
-      console.log('USER', '\n', 'stat:', userStats.str, '\n base:', base, '\n', 'random:', random, '\n', 'calculation: ( base:', base, ' + random:', random, ' ): ', base + random);
-      return base + random;
-    } else if (selectedMove === 'magic') {
-      let base = (userStats.mag + 2) * 2;
-      let random = Math.floor(Math.random() * base);
-      return base + random;
-    } else {
-      let base = (userStats.rng + 2) * 2;
-      let random = Math.floor(Math.random() * base);
-      return base + random;
-    }
+  const levelDifferenceScalingFactor = (userLevel, monsterLevel) => {
+    const levelDifference = userLevel - monsterLevel;
+    return 1 + levelDifference * 0.05;
   };
-
+  
+  const effectiveStat = (baseStat, level) => {
+    return baseStat + level * 0.5;
+  };
+  
+  const calculateUserDamage = () => {
+    const scalingFactor = levelDifferenceScalingFactor(userStats.level, monsterStats.level);
+    const baseStat = effectiveStat(userStats[selectedMove], userStats.level);
+    const base = baseStat * 3;
+    const random = Math.floor(Math.random() * (base * 2));
+    const defenseFactor = (monsterStats.base_def + monsterStats.base_res + monsterStats.base_eva) * 0.1;
+    const calc = (base + random) / defenseFactor * scalingFactor;
+    return calc;
+  };
+  
   const calculateMonsterDamage = () => {
-    console.log('mon=mon=mon=mon')
-    let base = (monsterStats.base_str + 2) * 1;
-    let random = Math.floor(Math.random() * base);
-    let calc = (base+random) - userStats.def
-    console.log('MONSTER', '\n', 'stat: ', monsterStats.base_str, '\n base: ', base, '\n', 'random: ', random, '\n', 'calculation: (( base:', base, ' + random:', random, ' ) - userStats.def:',userStats.def, ' ): ', calc);
-    
-    return calc
+    const scalingFactor = levelDifferenceScalingFactor(monsterStats.level, userStats.level);
+    const baseStat = effectiveStat(monsterStats.base_str + monsterStats.base_mag + monsterStats.base_rng, monsterStats.level);
+    const base = baseStat;
+    const random = Math.floor(Math.random() * (base * 2));
+    const defenseFactor = (userStats.def + userStats.res + userStats.eva) * 0.1;
+    const calc = (base + random) / defenseFactor * scalingFactor;
+    return calc;
   };
 
   const updatedUserStats = { ...userStats };
@@ -45,36 +56,38 @@ export default async function handler(req, res) {
 
   // User's turn
   const userDamage = calculateUserDamage();
-  updatedMonsterStats.hp-= userDamage;
+  updatedMonsterStats.hp -= userDamage;
 
-  async function getLootTableTypeIdByName(name) {
-    const lootTableType = await prisma.lootTableType.findFirst({
-      where: {
-        name: name,
-      },
-    });
-  
-    return lootTableType?.id;
-  }
-  
-  async function rollForItemDrop(lootTableTypeId) {
+
+
+  async function rollForItemDrop(lootTableTypeNames) {
+    console.log("Rolling for item drop with lootTableTypeNames:", lootTableTypeNames);
+
     const lootTables = await prisma.lootTable.findMany({
       where: {
-        lootTableTypeId: lootTableTypeId,
+        lootTableType: {
+          name: { in: lootTableTypeNames },
+        },
       },
       include: {
-        item: true,
+        items: true,
+        lootTableType: true,
       },
     });
   
-    const itemsWithChances = lootTables.map((lootTable) => ({
-      item: lootTable.item,
-      dropChance: lootTable.dropChance,
-    }));
-  
-    let randomNumber = Math.random() * 100; // Change const to let
+    const itemsWithChances = lootTables.flatMap((lootTable) =>
+      lootTable.items.map((item) => ({
+        item: item,
+        dropChance: lootTable.dropChance,
+      }))
+    );
+
+    console.log("Possible items:", itemsWithChances.length);
+
+    let randomNumber = Math.random() * 100;
+
     let selectedItem = null;
-  
+
     for (const itemWithChance of itemsWithChances) {
       if (randomNumber < itemWithChance.dropChance) {
         selectedItem = itemWithChance.item;
@@ -83,24 +96,26 @@ export default async function handler(req, res) {
         randomNumber -= itemWithChance.dropChance;
       }
     }
-    console.log('selected item: ', selectedItem)
     return selectedItem;
   }
-  
-  
+
+
+
   if (updatedMonsterStats.hp <= 0) {
     const winner = 'user';
     const xpGain = monsterStats.xp_reward;
     const newExp = userStats.exp + xpGain;
-    
+
     let newLevel = userStats.level;
     while (newExp >= expForLevel(newLevel + 1)) {
       newLevel += 1;
     }
-  
+
     const updateData = { exp: newExp };
     if (newLevel !== userStats.level) {
-      updateData.level = newLevel; 
+      console.log('############################')
+      console.log(updateData[selectedMove])
+      updateData.level = newLevel;
       updateData.str = userStats.str + Math.floor(Math.random() * userStats.level) + 1;
       updateData.mag = userStats.mag + Math.floor(Math.random() * userStats.level) + 1;
       updateData.rng = userStats.rng + Math.floor(Math.random() * userStats.level) + 1;
@@ -108,39 +123,56 @@ export default async function handler(req, res) {
       updateData.res = userStats.res + Math.floor(Math.random() * userStats.level) + 1;
       updateData.eva = userStats.eva + Math.floor(Math.random() * userStats.level) + 1;
     }
-  
+
     await prisma.userStats.update({
       where: { userId: userStats.userId },
       data: updateData,
     });
-    const globalLootTableTypeId = await getLootTableTypeIdByName('GLOBAL');
-    const item = await rollForItemDrop(globalLootTableTypeId);
+    const lootTableTypeNames = [];
+    if (monsterStats.item_loot_table === 'JACKPOT') {
+      lootTableTypeNames.push('JACKPOT', 'RARE', 'UNCOMMON', 'COMMON');
+    } else if (monsterStats.item_loot_table === 'RARE') {
+      lootTableTypeNames.push('RARE', 'UNCOMMON', 'COMMON');
+    } else if (monsterStats.item_loot_table === 'UNCOMMON') {
+      lootTableTypeNames.push('UNCOMMON', 'COMMON');
+    } else {
+      lootTableTypeNames.push('COMMON');
+    }
+    const item = await rollForItemDrop(lootTableTypeNames);
+
     if (item) {
-      console.log('globalLootTableTypeId: ', globalLootTableTypeId)
-      console.log('item: ', item)
       const userInventory = await prisma.userInventory.findFirst({
         where: { userId: userStats.userId },
       });
+      const existingSlot = Object.entries(userInventory).find(([key, value]) => {
+        if (!key.startsWith("slot") || !value) return false;
+        const { id, quantity } = value;
+        return id === item.id && (!item.stackable || quantity < item.stackLimit);
+      });
 
-      console.log('fetched user ok');
-      console.log('userInventory: ', userInventory)
-    
-      const emptySlots = Object.entries(userInventory).filter(([key, value]) => key.startsWith("slot") && value === null);
-    
-      console.log('empty slots: ', emptySlots)
-      if (emptySlots.length) {
-        const [firstEmptySlot] = emptySlots;
-    
+      if (existingSlot) {
+        const [slotKey, slotValue] = existingSlot;
+        const slotData = slotValue;
         await prisma.userInventory.update({
           where: { userId: userStats.userId },
-          data: { [firstEmptySlot[0]]: item.id },
+          data: { [slotKey]: { ...slotData, quantity: slotData.quantity + 1 } },
         });
       } else {
-        // Handle the case when there's no room in the inventory, e.g., show a message to the user
+        const emptySlots = Object.entries(userInventory).filter(([key, value]) => key.startsWith("slot") && value === null);
+        if (emptySlots.length) {
+          const [firstEmptySlot] = emptySlots;
+
+          await prisma.userInventory.update({
+            where: { userId: userStats.userId },
+            data: { [firstEmptySlot[0]]: { ...item, quantity: 1 } },
+          });
+        } else {
+          // Handle the case when there's no room in the inventory, e.g., show a message to the user
+        }
       }
     }
-  
-    res.status(200).json({ outcome: winner, updatedUserStats, updatedMonsterStats });
+
+    res.status(200).json({ outcome: winner, updatedUserStats, updatedMonsterStats, item });
     return;
   }
 

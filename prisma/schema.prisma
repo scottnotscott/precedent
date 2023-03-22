@@ -45,8 +45,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  userStats     UserStats[]    // add this line to link the User to their UserStats
-  userInventory UserInventory[] // add this line to link the User to their UserInventory
+  userStats     UserStats[]    
+  userInventory UserInventory[] 
 }
 
 model VerificationToken {
@@ -81,9 +81,30 @@ model UserStats {
 model UserInventory {
   id       String @id @default(cuid())
   userId   String @unique
-  slot01   String? // Change this line to make it nullable
-  slot02   String? // Change this line to make it nullable
-  slot03   String? // Change this line to make it nullable
+  slot01   Json? 
+  slot02   Json? 
+  slot03   Json? 
+  slot04   Json?
+  slot05   Json?
+  slot06   Json?
+  slot07   Json?
+  slot08   Json?
+  slot09   Json?
+  slot10   Json?
+  slot11   Json?
+  slot12   Json?
+  slot13   Json?
+  slot14   Json?
+  slot15   Json?
+  slot16   Json?
+  slot17   Json?
+  slot18   Json?
+  slot19   Json?
+  slot20   Json?
+  slot21   Json?
+  slot22   Json?
+  slot23   Json?
+  slot24   Json?
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId])
 }
@@ -104,10 +125,9 @@ model LootTableType {
 model LootTable {
   id           String       @id @default(cuid())
   lootTableTypeId String
-  itemId       String
   dropChance   Float
   rarity       Rarity
-  item         Item         @relation(fields: [itemId], references: [id])
+  items         Item[]        @relation("LootTableItems")
   lootTableType LootTableType @relation(fields: [lootTableTypeId], references: [id])
 }
 
@@ -126,8 +146,10 @@ model Item {
   image         String
   shop_value    String?
   tradeable     Boolean       @default(false)
+  stackable     Boolean       @default(true)
+  stackLimit    Int           @default(1)
   statModifiers StatModifier[] @relation("ItemStatModifiers")
-  lootTables    LootTable[]   // Add this line to fix the error
+  lootTables    LootTable[]   @relation("LootTableItems")
 }
 
 enum Rarity {
