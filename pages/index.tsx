@@ -33,7 +33,7 @@ export default function Home() {
         <Hero.Overlay className="bg-opacity-60" />
         <Hero.Content className="text-center">
           <div className="max-w-md">
-          <Image src="https://i.imgur.com/C5KKWec.png" alt="feudal logo" width="490" height="186" />
+          <Image src="https://i.imgur.com/C5KKWec.png" alt="feudal.world logo" width="490" height="186" />
             <p className="py-6">
               This is a procedural browser-based massively multiplayer role-playing game.
             </p>

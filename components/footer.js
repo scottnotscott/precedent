@@ -19,7 +19,7 @@ export default function Footer() {
       {isLoading && <p>Loading gameversion...</p>}
       {data && (
         <>
-          <p>game version: {data[0].version}</p><p>Changelog: {data[0].changelog['0.03'][0]}, {data[0].changelog['0.03'][1]} any issues please dm scott-#5240 on Discord</p>
+          <p>game version: {data[0].version}</p><p>Changelog: {data[0].changelog['0.03'][0]}, {data[0].changelog['0.03'][1]} any issues please email: bugs@feudal.world</p>
         </>
       )}
     </footer>
