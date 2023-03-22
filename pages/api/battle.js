@@ -47,15 +47,52 @@ export default async function handler(req, res) {
   const userDamage = calculateUserDamage();
   updatedMonsterStats.hp-= userDamage;
 
-  // have a list of levels and their exp requirements
-  // e.g. level: 2 = 2000, level 3 = 4500, level 4 = 8000
+  async function getLootTableTypeIdByName(name) {
+    const lootTableType = await prisma.lootTableType.findFirst({
+      where: {
+        name: name,
+      },
+    });
   
-
+    return lootTableType?.id;
+  }
+  
+  async function rollForItemDrop(lootTableTypeId) {
+    const lootTables = await prisma.lootTable.findMany({
+      where: {
+        lootTableTypeId: lootTableTypeId,
+      },
+      include: {
+        item: true,
+      },
+    });
+  
+    const itemsWithChances = lootTables.map((lootTable) => ({
+      item: lootTable.item,
+      dropChance: lootTable.dropChance,
+    }));
+  
+    let randomNumber = Math.random() * 100; // Change const to let
+    let selectedItem = null;
+  
+    for (const itemWithChance of itemsWithChances) {
+      if (randomNumber < itemWithChance.dropChance) {
+        selectedItem = itemWithChance.item;
+        break;
+      } else {
+        randomNumber -= itemWithChance.dropChance;
+      }
+    }
+    console.log('selected item: ', selectedItem)
+    return selectedItem;
+  }
+  
+  
   if (updatedMonsterStats.hp <= 0) {
     const winner = 'user';
     const xpGain = monsterStats.xp_reward;
     const newExp = userStats.exp + xpGain;
-  
+    
     let newLevel = userStats.level;
     while (newExp >= expForLevel(newLevel + 1)) {
       newLevel += 1;
@@ -76,6 +113,32 @@ export default async function handler(req, res) {
       where: { userId: userStats.userId },
       data: updateData,
     });
+    const globalLootTableTypeId = await getLootTableTypeIdByName('GLOBAL');
+    const item = await rollForItemDrop(globalLootTableTypeId);
+    if (item) {
+      console.log('globalLootTableTypeId: ', globalLootTableTypeId)
+      console.log('item: ', item)
+      const userInventory = await prisma.userInventory.findFirst({
+        where: { userId: userStats.userId },
+      });
+
+      console.log('fetched user ok');
+      console.log('userInventory: ', userInventory)
+    
+      const emptySlots = Object.entries(userInventory).filter(([key, value]) => key.startsWith("slot") && value === null);
+    
+      console.log('empty slots: ', emptySlots)
+      if (emptySlots.length) {
+        const [firstEmptySlot] = emptySlots;
+    
+        await prisma.userInventory.update({
+          where: { userId: userStats.userId },
+          data: { [firstEmptySlot[0]]: item.id },
+        });
+      } else {
+        // Handle the case when there's no room in the inventory, e.g., show a message to the user
+      }
+    }
   
     res.status(200).json({ outcome: winner, updatedUserStats, updatedMonsterStats });
     return;

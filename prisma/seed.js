@@ -4,26 +4,99 @@ const prisma = new PrismaClient();
 
 async function main() {
   await prisma.account.deleteMany();
+  console.log('flushed accounts')
   await prisma.session.deleteMany();
+  console.log('flushed sessions')
   await prisma.user.deleteMany();
+  console.log('flushed users')
   await prisma.userInventory.deleteMany();
+  console.log('flushed inventories')
   await prisma.userStats.deleteMany();
-  await prisma.serverInformation.create({
+  console.log('flushed userStats')
+  await prisma.item.deleteMany();
+  console.log('flushed items')
+  await prisma.lootTable.deleteMany();
+  console.log('flushed loot tables')
+  await prisma.lootTableType.deleteMany();
+  console.log('flushed loot table types')
+  const lootTableType1 = await prisma.lootTableType.create({
     data: {
-      version: '0.0.1'
-    }
-  })
-  // await prisma.monsters.createMany({
-  //   data: [
-  //     {name: 'Goblin', image: 'https://i.imgur.com/OQMRP6G.png', description: 'A goblin wielding two short blades',},
-  //     {name: 'Bandit', image: 'https://i.imgur.com/JRubfY8.png', description: 'A nasty bandit', level:3, monster_rarity:'NORMAL', base_hp:130, base_str:3, base_def:3, xp_reward:15, currency_reward:22},
-  //     {name: 'Skeleton', image: 'https://i.imgur.com/WRyMztD.png', description: 'An angry Skeleton', level:3, monster_rarity:'NORMAL', base_hp:160, base_str:4, base_def:2, xp_reward:18, currency_reward: 20},
-  //     {name: 'Witch', image: 'https://i.imgur.com/43utDNA.png', description: 'A magic embued Witch!', level:4, monster_rarity:'RARE', base_hp:200, base_mag:6, base_res:6, item_loot_table:'RARE', xp_reward: 25, currency_reward: 30},
-  //     {name: "Goblin's Dad", image: 'https://i.imgur.com/Aew0Y0b.png', description: "A goblin's Dad, wielding a rather large club", level: 5, monster_rarity: 'RARE', base_hp: 230, base_str: 7, base_def: 7, item_loot_table: 'RARE', xp_reward: 25, currency_reward: 35
-  //   },
-  //   ]
-  // })
-  // add more deleteMany calls for all tables in your database
+      name: 'GLOBAL',
+    },
+  });
+  console.log('created item table type')
+  const itemCommon1 = await prisma.item.create({
+    data: {
+      name: 'Common Item 1',
+      type: 'Example Type',
+      rarity: 'COMMON',
+      image: 'path/to/image.png',
+    },
+  });
+  
+  const itemUncommon1 = await prisma.item.create({
+    data: {
+      name: 'Uncommon Item 1',
+      type: 'Example Type',
+      rarity: 'UNCOMMON',
+      image: 'path/to/image.png',
+    },
+  });
+  
+  const itemRare1 = await prisma.item.create({
+    data: {
+      name: 'Rare Item 1',
+      type: 'Example Type',
+      rarity: 'RARE',
+      image: 'path/to/image.png',
+    },
+  });
+  
+  const itemJackpot1 = await prisma.item.create({
+    data: {
+      name: 'Jackpot Item 1',
+      type: 'Example Type',
+      rarity: 'JACKPOT',
+      image: 'path/to/image.png',
+    },
+  });
+  console.log('created item(s)')
+  await prisma.lootTable.create({
+    data: {
+      itemId: itemCommon1.id,
+      lootTableTypeId: lootTableType1.id,
+      dropChance: 60,
+      rarity: 'COMMON',
+    },
+  });
+  
+  await prisma.lootTable.create({
+    data: {
+      itemId: itemUncommon1.id,
+      lootTableTypeId: lootTableType1.id,
+      dropChance: 30,
+      rarity: 'UNCOMMON',
+    },
+  });
+  
+  await prisma.lootTable.create({
+    data: {
+      itemId: itemRare1.id,
+      lootTableTypeId: lootTableType1.id,
+      dropChance: 9,
+      rarity: 'RARE',
+    },
+  });
+  
+  await prisma.lootTable.create({
+    data: {
+      itemId: itemJackpot1.id,
+      lootTableTypeId: lootTableType1.id,
+      dropChance: 1,
+      rarity: 'JACKPOT',
+    },
+  });
+  console.log('created loot tables')
 }
 
 main()

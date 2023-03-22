@@ -15,7 +15,7 @@
         "base_eva": 2,	
         "description": "A goblin wielding two short blades",	
         "currency_reward": 10,	
-        "item_loot_table": "GLOBAL",	
+        "item_loot_table": "COMMON",	
         "xp_reward": 5,	
         "id": 1
     },
@@ -35,7 +35,7 @@
         "base_eva": 4,	
         "description": "A bandit",	
         "currency_reward": 22,	
-        "item_loot_table": "GLOBAL",	
+        "item_loot_table": "COMMON",	
         "xp_reward": 15,	
         "id": 2 
     },
@@ -55,7 +55,7 @@
         "base_eva": 6,	
         "description": "A nimble looking Skeleton",	
         "currency_reward": 20,	
-        "item_loot_table": "GLOBAL",	
+        "item_loot_table": "COMMON",	
         "xp_reward": 18,	
         "id": 3
     },
@@ -95,7 +95,7 @@
         "base_eva": 4,	
         "description": "A goblin's Dad, wielding a rather large club",	
         "currency_reward": 35,	
-        "item_loot_table": "RARE",	
+        "item_loot_table": "JACKPOT",	
         "xp_reward": 1000,	
         "id": 5
     },
@@ -115,7 +115,7 @@
         "base_eva": 4,	
         "description": "Debug",	
         "currency_reward": 35,	
-        "item_loot_table": "RARE",	
+        "item_loot_table": "JACKPOT",	
         "xp_reward": 25,	
         "id": 6
     }

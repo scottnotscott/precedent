@@ -81,17 +81,13 @@ model UserStats {
 model UserInventory {
   id       String @id @default(cuid())
   userId   String @unique
-  slot01   String @default("Empty")
-  slot02   String @default("Empty")
-  slot03   String @default("Empty")
+  slot01   String? // Change this line to make it nullable
+  slot02   String? // Change this line to make it nullable
+  slot03   String? // Change this line to make it nullable
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId])
 }
 
-model ServerInformation {
-  id        String @id @default(cuid())
-  version   String @default("0.01")
-}
 
 enum Activity {
   IDLE
@@ -99,52 +95,44 @@ enum Activity {
   COMBAT
 }
 
-model Monsters {
-  id      Int @id @default(autoincrement())
-  name    String
-  monster_type    Monster_type @default(MELEE)
-  monster_rarity  Monster_rarity @default(NORMAL)
-  monster_affix   Monster_affix @default(NONE)
-  image           String?
-  level           Int @default(1)
-  base_hp         Int @default(100)
-  base_str        Int @default(1)
-  base_def        Int @default(1)
-  base_mag        Int @default(1)
-  base_res        Int @default(1)
-  base_rng        Int @default(1)
-  base_eva        Int @default(1)
-  description     String?
-  currency_reward Int @default(10)
-  item_loot_table Item_loot_table @default(GLOBAL)
-  xp_reward       Int @default(5)
+model LootTableType {
+  id      String @id @default(cuid())
+  name    String @unique
+  lootTables LootTable[]
 }
 
-enum Monster_type {
-  MELEE
-  RANGED
-  MAGIC
+model LootTable {
+  id           String       @id @default(cuid())
+  lootTableTypeId String
+  itemId       String
+  dropChance   Float
+  rarity       Rarity
+  item         Item         @relation(fields: [itemId], references: [id])
+  lootTableType LootTableType @relation(fields: [lootTableTypeId], references: [id])
 }
 
-enum Monster_rarity {
-  NORMAL
+model StatModifier {
+  id       String  @id @default(cuid())
+  stat     String
+  modifier Int
+  items    Item[]  @relation("ItemStatModifiers")
+}
+
+model Item {
+  id            String        @id @default(cuid())
+  name          String
+  type          String
+  rarity        String
+  image         String
+  shop_value    String?
+  tradeable     Boolean       @default(false)
+  statModifiers StatModifier[] @relation("ItemStatModifiers")
+  lootTables    LootTable[]   // Add this line to fix the error
+}
+
+enum Rarity {
+  COMMON
+  UNCOMMON
   RARE
-  MAGIC
-  EXOTIC
-  LEGENDARY
-}
-
-enum Monster_affix {
-  NONE
-  BERSERK
-  BRUTE
-  ANCIENT
-  NIMBLE
-}
-
-enum Item_loot_table {
-  GLOBAL
-  NORMAL
-  RARE
-  EXOTIC
+  JACKPOT
 }
