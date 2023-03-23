@@ -19,12 +19,14 @@ export default function MonsterCard({ id, onEngageClick }) {
     let message = `Earn around ${monsterData.xp_reward}xp and ${monsterData.currency_reward}gp per kill. Loot table: ${monsterData.item_loot_table}`;
     return (
       <>
-        <Card bordered="true" className="w-96 bg-base-100 shadow-xl ">
+        <Card bordered="true" className="w-96 bg-base-100 shadow-xl bg-opacity-60 ">
         <Tooltip message={monsterData.description} position="top" onMouseEnter={trigger}>
           <Card.Image
             className="animate-pulse"
             src={monsterData.image}
             alt={monsterData.description}
+            height={64}
+            width={64}
           />
           </Tooltip>
           <Card.Body className="items-center text-center ">
