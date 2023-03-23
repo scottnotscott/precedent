@@ -1,3 +1,5 @@
+import prisma from "./../../prisma";
+
 export default async function handler(req, res) {
     console.log("req:inventory by: ", req.query.userId);
   
