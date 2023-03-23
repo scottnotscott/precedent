@@ -23,6 +23,8 @@ export default function Layout({ children }) {
     });
   };
 
+  if(session){console.log(userInventory)}
+
   return (
     <div className={`flex min-h-screen bg-gray-700 ${!session ? "justify-center" : ""}`}>
       {session && <Sidebar session={session} />}
