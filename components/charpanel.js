@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Avatar } from 'react-daisyui';
 
 export default function CharPanel({ userStats, session, userInventory }) {
-    console.log('user inventory: ', userInventory)
+    
 
     if (!userStats) {
         return (
@@ -32,7 +32,7 @@ xp</p>
                 <p>Level: {userStats.level}</p>
                 <p>Rank: {userStats.rank}</p>
                 <p>Village: {userStats.village}</p>
-                <p>Health: {userStats.hp}</p>
+                <p>Health: {userStats.hp_current}/{userStats.hp}</p>
                 <div className="mt-2"></div>
                 <div className="flex flex-row items-center text-white mb-2"> <p>Melee Stats</p> </div>
                 <p>str: {userStats.str}</p>

@@ -5,9 +5,7 @@ import axios from 'axios';
 import Image from "next/image";
 import { Countdown, Alert } from 'react-daisyui';
 import useMonsters from './../useMonsters';
-
-
-
+const abilities = require('./../json/abilities.json');
 const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
   const [battleOutcome, setBattleOutcome] = useState(null);
   const [userStats, setUserStats] = useState(null);
@@ -18,30 +16,95 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
   const [userAction, setUserAction] = useState(null);
   const [monsterAction, setMonsterAction] = useState(null);
   const [rewardedItem, setRewardedItem] = useState(null);
+  const [attackOptions, setAttackOptions] = useState([]);
+  const fetcher = (...args) => fetch(...args).then(res => res.json())
+  const { data: userAbilitiesData, error: userAbilitiesError } = useSWR(session?.user?.id ? `/api/userAbilities?userId=${session.user.id}` : null, fetcher);
+  const userAbilities = userAbilitiesData?.abilities || [];
   const router = useRouter();
   let battleEnd = false;
-
+  async function getUserAttackOptions(userAbilities) {
+    if (!Array.isArray(userAbilities) || userAbilities.length === 0) {
+      // If no abilities are unlocked or userAbilities is not an array, return the default attack styles
+      return [
+        {
+          id: 'str',
+          name: 'Basic strength attack',
+          damage: userStats.str,
+        },
+        {
+          id: 'mag',
+          name: 'Basic magic attack',
+          damage: userStats.mag,
+        },
+        {
+          id: 'rng',
+          name: 'Basic ranged attack',
+          damage: userStats.rng,
+        },
+      ];
+    }
+    const options = userAbilities.map((ability) => ({
+      id: ability.id,
+      name: ability.name,
+      damage: userStats[ability.type] * ability.effect.damageModifier,
+    }));
+    console.log("Generated options:", options);
+    return options;
+    
+  }
+  async function updateUnlockedAbilities(userId, str) {
+    const abilitiesToUnlock = abilities.filter(ability => ability.requiredLevel === str);
+    if (abilitiesToUnlock.length > 0) {
+      const userStats = await prisma.userStats.findUnique({
+        where: {
+          userId: userId,
+        },
+      });
+  
+      const existingAbilities = userStats.unlockedAbilities || [];
+      const newAbilities = abilitiesToUnlock.map(ability => ability.id);
+  
+      await prisma.userStats.update({
+        where: {
+          userId: userId,
+        },
+        data: {
+          unlockedAbilities: {
+            set: [...existingAbilities, ...newAbilities],
+          },
+        },
+      });
+    }
+  }
   const countdownRef = useRef(countdown);
-
   useEffect(() => {
     countdownRef.current = countdown;
   }, [countdown]);
-
   const { data: userData, mutate } = useSWR(`/api/stats?userId=${session.user.id}`);
   useEffect(() => {
     if (userData) {
       setUserStats(userData);
     }
   }, [userData]);
-
   const { data: monsterData } = useMonsters(monsterId);
   useEffect(() => {
     if (monsterData) {
-      console.log(monsterData)
       setMonsterStats({ ...monsterData, hp: monsterData.base_hp });
     }
   }, [monsterData]);
-
+  useEffect(() => {
+    if (userAbilitiesData && userAbilitiesData.abilities && userAbilitiesData.abilities.length > 0 && userStats) {
+      console.log("userAbilitiesData", userAbilitiesData);
+      getUserAttackOptions(userAbilitiesData.abilities).then((options) => {
+        setAttackOptions(options);
+      });
+    }
+  }, [userAbilitiesData, userStats]);
+  useEffect(() => {
+    if (userAbilitiesError) {
+      console.error('Error fetching user abilities:', userAbilitiesError);
+    }
+  }, [userAbilitiesError]);
   useEffect(() => {
     if (userStats && monsterStats && !battleEnd) {
       const countdownInterval = setInterval(() => {
@@ -54,34 +117,36 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
           }
         }
       }, 1000);
-
       return () => {
         clearInterval(countdownInterval);
       };
     }
   }, [userStats, monsterStats, countdown, isUpdatingHealth]);
-
   useEffect(() => {
     if(battleOutcome) {
       onBattleEnd();
       mutate();
     }
   }, [battleOutcome])
-
+  useEffect(() => {
+    if (userStats) {
+      const userAbilities = userStats.unlockedAbilities || [];
+      getUserAttackOptions(userAbilities).then((options) => {
+        setAttackOptions(options);
+      });
+    }
+  }, [userStats]);
   const runBattle = async () => {
     const response = await axios.post('/api/battle', {
       userStats,
       monsterStats,
       selectedMove,
     });
-
     const { outcome, updatedUserStats, updatedMonsterStats, userDamage, monsterDamage, item } = response.data;
     setUserStats(updatedUserStats);
     setMonsterStats(updatedMonsterStats);
-
     setUserAction({ move: selectedMove, damage: userDamage });
     setMonsterAction({ move: "base_str", damage: monsterDamage });
-
     if (outcome) {
       setBattleOutcome(outcome);
       if(outcome === "user") {
@@ -96,50 +161,38 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
   const handleMoveChange = (e) => {
     setSelectedMove(e.target.value);
   };
-
+  const renderAttackOptions = () => {
+    return attackOptions.map((option, index) => (
+      <div key={index}>
+        <input
+          type="radio"
+          id={option.id}
+          name="move"
+          value={option.id}
+          checked={selectedMove === option.id}
+          onChange={handleMoveChange}
+        />
+        <label htmlFor={option.id}>
+          {option.name}: {option.damage}
+        </label>
+        <br />
+      </div>
+    ));
+  };
   return (
     <div className="flex flex-col flex-grow items-center justify-center mr-72 ml-24">
       <h1 className="text-2xl font-bold mb-6">BattleScreen - This is in alpha! Can you cheat the system?</h1>
       <div className="w-full flex flex-col md:flex-row justify-between">
         <div className="md:w-1/3 flex flex-col items-center">
-
           {userStats && (
             <>
               <h2 className="text-xl font-semibold mb-4">{session?.user?.name}</h2>
               <Image src={session?.user?.image} alt={session?.user?.name} width={150} height={150} />
-              <p>Health: {userStats.hp}/{baseHP}</p>
-              <progress className="progress progress-error w-46" value={userStats.hp} max={baseHP}></progress>
+              <p>Health: {userStats.hp_current}/{userStats.hp}</p>
+              <progress className="progress progress-error w-46" value={userStats.hp_current} max={userStats.hp}></progress>
               <div>
                 <p className="pt-3">Attack Options</p>
-                <input
-                  type="radio"
-                  id="str"
-                  name="move"
-                  value="str"
-                  checked={selectedMove === 'str'}
-                  onChange={handleMoveChange}
-                />
-                <label htmlFor="str">Use Strength: {(userStats.str * 3) * 2}</label>
-                <br />
-                <input
-                  type="radio"
-                  id="mag"
-                  name="move"
-                  value="mag"
-                  checked={selectedMove === 'mag'}
-                  onChange={handleMoveChange}
-                />
-                <label htmlFor="mag">Use Magic: {(userStats.mag * 3) * 2}</label>
-                <br />
-                <input
-                  type="radio"
-                  id="rng"
-                  name="move"
-                  value="rng"
-                  checked={selectedMove === 'rng'}
-                  onChange={handleMoveChange}
-                />
-                <label htmlFor="rng">Use Ranged: {(userStats.rng * 3) * 2}</label>
+                {renderAttackOptions()}
               </div>
             </>
           )}
@@ -165,7 +218,6 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
           )}
         </div>
         <div className="md:w-1/3 flex flex-col items-center">
-
           {monsterStats && (
             <>
               <h2 className="text-xl font-semibold mb-4">{monsterStats.name}</h2>
@@ -188,7 +240,5 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
       )}
     </div>
   );
-
 };
-
 export default BattleScreen;

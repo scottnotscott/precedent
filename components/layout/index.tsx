@@ -1,16 +1,10 @@
-import { useSession, signOut } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
-import Monsters from "../monsters";
+import { useSession } from "next-auth/react";
 import Sidebar from "../sidebar";
 import Footer from "../footer";
-import { ArrowDownLeft } from "lucide-react";
-import { Tooltip } from "react-daisyui";
 import CharPanel from "../charpanel";
 import useStats from "./../../useStats";
 import useInventory from "./../../useInventory";
 import React from "react";
-
 
 export default function Layout({ children }) {
   const { data: session, status } = useSession();
@@ -22,9 +16,6 @@ export default function Layout({ children }) {
       return React.cloneElement(child, { userStats, session, userInventory });
     });
   };
-
-  if(session){console.log(userInventory)}
-
   return (
     <div className={`flex min-h-screen bg-gray-700 ${!session ? "justify-center" : ""}`}>
       {session && <Sidebar session={session} />}

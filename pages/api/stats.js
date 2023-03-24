@@ -8,7 +8,7 @@ export default async function handler(req, res) {
                 id: req.query.userId,
             },
             select: {
-                userStats: true
+                userStats:true,
             }
         })
         res.status(200).json(userStats.userStats[0])

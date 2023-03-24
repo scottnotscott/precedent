@@ -28,6 +28,9 @@ export const authOptions: NextAuthOptions = {
           await prisma.userStats.create({
             data: {
                id: isNewUser.id,
+               str: 4,
+               exp: 900,
+               hp_current: 1000,
                user: { connect: { id: isNewUser.id } },
             },
           });

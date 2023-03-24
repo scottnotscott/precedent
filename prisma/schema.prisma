@@ -61,6 +61,7 @@ model UserStats {
   id       String @id @default(cuid())
   userId   String @unique
   hp       Int @default(100)
+  hp_current Int @default(100)
   str      Int @default(1)
   def      Int @default(1)
   mag      Int @default(1)
@@ -74,6 +75,7 @@ model UserStats {
   bio      String @default("Nothing to see here")
   village  String @default("Kinyo")
   activity Activity @default(IDLE)
+  unlockedAbilities Json?
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId])
 }
