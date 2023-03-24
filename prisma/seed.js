@@ -1,8 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
-
 const prisma = new PrismaClient();
-
 async function main() {
+  const before = Date.now()
   await prisma.account.deleteMany();
   console.log('flushed accounts')
   await prisma.session.deleteMany();
@@ -157,6 +156,9 @@ async function main() {
   });
   
   console.log('created loot tables')
+  const after = Date.now()
+  
+    console.log(`initialisation took ${after - before}ms`)
 }
 
 main()

@@ -1,13 +1,13 @@
 import { Home, Cherry, Beer, Eye, Facebook, Globe2, Sword, Swords, Lock } from "lucide-react"
 import { useState } from "react";
 import { Tooltip } from 'react-daisyui';
-import { useSession, signOut } from "next-auth/react";
+import {  signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link"
 
 //TODO:: add breakpoints for mobile devices so sidebar doesn't break on smaller screens
-export default function Sidebar() {
-    const { data: session, status } = useSession();
+export default function Sidebar({session}) {
+    
     const [isShown, setIsShown] = useState(false);
 
     function trigger(e) {

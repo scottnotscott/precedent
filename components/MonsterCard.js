@@ -1,4 +1,3 @@
-import { useSession } from "next-auth/react";
 import useSWR from 'swr';
 import { Card, Button, Tooltip, Progress } from 'react-daisyui';
 import { Sword } from "lucide-react";

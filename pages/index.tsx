@@ -1,10 +1,6 @@
-import Layout from "@/components/layout";
 import { Hero, Button, Divider, Table } from 'react-daisyui'
 import useGameVersion from "../useGameVersion";
 import { useState } from 'react';
-import useStats from "./../useStats"
-import {useSession} from "next-auth/react"
-import Link from "next/link";
 import Image from "next/image";
 
 export default function Home() {
@@ -13,12 +9,12 @@ export default function Home() {
 
   function handleClickDev(e) {
     e.preventDefault();
-    window.location.href = 'http://localhost:3000/api/auth/signin?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2F'
+    window.location.href = 'http://localhost:3000/api/auth/signin?callbackUrl=http://localhost/'
   }
 
   function handleClickAlpha(e) {
     e.preventDefault();
-    window.location.href = 'http://feudal.world/api/auth/signin?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2F'
+    window.location.href = 'http://feudal.world/api/auth/signin?callbackUrl=https://feudal.world/'
   }
 
   function handleTabClick(tabNumber) {

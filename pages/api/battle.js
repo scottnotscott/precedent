@@ -1,15 +1,7 @@
 import prisma from "./../../prisma";
 import abilities from "./../../json/abilities.json";
-async function getLootTableTypeIdByName(name) {
-  const lootTableType = await prisma.lootTableType.findFirst({
-    where: {
-      name: name,
-    },
-  });
-  return lootTableType?.id;
-}
+
 async function rollForItemDrop(lootTableTypeNames) {
-  console.log("Rolling for item drop with lootTableTypeNames:", lootTableTypeNames);
   const lootTables = await prisma.lootTable.findMany({
     where: {
       lootTableType: {
@@ -27,7 +19,6 @@ async function rollForItemDrop(lootTableTypeNames) {
       dropChance: lootTable.dropChance,
     }))
   );
-  console.log("Possible items:", itemsWithChances.length);
   let randomNumber = Math.random() * 100;
   let selectedItem = null;
   for (const itemWithChance of itemsWithChances) {
@@ -50,6 +41,7 @@ export default async function handler(req, res) {
   const expForLevel = (level) => {
     return 1000 * (level - 1) * (level - 1);
   };
+  let abilityBattleText = 'You attacked for ';
   const { userStats, monsterStats, selectedMove } = req.body;
   const levelDifferenceScalingFactor = (userLevel, monsterLevel) => {
     const levelDifference = userLevel - monsterLevel;
@@ -58,25 +50,25 @@ export default async function handler(req, res) {
   const effectiveStat = (baseStat, level) => {
     return baseStat + level * 0.5;
   };
-  const isAbilityUnlocked = (abilityId, userLevel) => {
-    const ability = abilities.find((a) => a.id === abilityId);
-    return ability && userLevel >= ability.requiredLevel;
+  const isAbilityUnlocked = (ability, userLevel) => {
+    return userLevel >= ability.requiredLevel;
   };
-  function findAbilityByName(name) {
-    return abilities.find((ability) => ability.name === name);
-  }
+ 
   const calculateUserDamage = () => {
-    const ability = abilities.find((a) => a.id === selectedMove);
-    if (ability && isAbilityUnlocked(selectedMove, userStats.level)) {
-      const scalingFactor = levelDifferenceScalingFactor(userStats.level, monsterStats.level);
+    const ability = abilities.find((a) => a.id.toString() === selectedMove);
+    const scalingFactor = levelDifferenceScalingFactor(userStats.level, monsterStats.level);
+    if (ability && isAbilityUnlocked(ability, userStats[ability.type])) {
+      abilityBattleText = ability ? ability.battleText : 'You attacked for ';
+      console.log('abilityBattleText: ', abilityBattleText)
       const baseStat = effectiveStat(userStats[ability.type], userStats.level) * ability.effect.damageMultiplier;
       const base = baseStat * 3;
       const random = Math.floor(Math.random() * (base * 2));
       const defenseFactor = (monsterStats.base_def + monsterStats.base_res + monsterStats.base_eva) * 0.1;
       const calc = (base + random) / defenseFactor * scalingFactor;
+      console.log('calc: ', calc)
       return calc;
     } else {
-      const scalingFactor = levelDifferenceScalingFactor(userStats.level, monsterStats.level);
+      console.log('no newability selected')
       const baseStat = effectiveStat(userStats[selectedMove], userStats.level);
       const base = baseStat * 3;
       const random = Math.floor(Math.random() * (base * 2));
@@ -99,6 +91,7 @@ export default async function handler(req, res) {
   
   // User's turn
   const userDamage = calculateUserDamage();
+  console.log('userDamage: ', userDamage, typeof(userDamage))
   updatedMonsterStats.hp -= Math.round(userDamage);
 
   
@@ -115,21 +108,48 @@ export default async function handler(req, res) {
       exp: newExp,
       hp_current: Math.round(updatedUserStats.hp_current),
     };
-    console.log('updateData: ', updateData)
+    
     if (newLevel !== userStats.level) {
-      const ability = findAbilityByName(selectedMove);
-      let statType = selectedMove;
+      // check if the user has used an ability or a default move
+      const ability = abilities.find((a) => a.id === parseInt(selectedMove));
+      let statType;
 
-      if (ability) {
-        statType = ability.type;
+      // check if its an ability or a default move, and set statType to the associated type, can only be 'str', 'rng' or 'mag'
+      if(ability) {
+        console.log('ability: ', ability)
+        console.log('IS ABILITY')
+        statType = ability.type
+        console.log('statType: (should be str, mag, or rng): ', statType)
       }
+      if(!ability) {
+        console.log('IS NOT AN ABILITY')
+        statType = selectedMove
+        console.log('statType: (should be str, mag or rng): ', statType)
+      }
+      //increase the updateData[statType] which is updateData.str, updateData.rng or updateData.mag by 1
       updateData[statType] = userStats[statType] + Math.floor(Math.random() * 2) + 1;
+      console.log('updateData[statType]: ', updateData[statType])
+      //increase the usersStats.level by 1
       updateData.level = newLevel;
-      const newlyUnlockedAbilities = abilities.filter(ability => {
-        return updateData[statType] >= ability.requiredLevel
-      })
+
+      // check the updateData[ability.type] is greater than or equal to the ability.requiredLevel
+      const checkAbilityRequirements = (ability, updateData) => {
+        // updateData[ability.type] can only be updateData.str, updateData.mag or updateData.rng
+        console.log('updateData[ability.type]: ', updateData[ability.type])
+        return updateData[ability.type] >= ability.requiredLevel;
+      }
+      // return the abilities that meet the requirements
+      const getNewlyUnlockedAbilities = (abilities, updateData) => {
+        // takes an array of possible abilities and returns the ones that pass the checkAbilityRequirements check
+        console.log('abilities: ', abilities)
+        return abilities.filter(ability => checkAbilityRequirements(ability, updateData))
+      }
+      // should return the abilities from getNewlyUnlockedAbilities
+      const newlyUnlockedAbilities = getNewlyUnlockedAbilities(abilities, updateData);
       console.log('newlyUnlockedAbilities: ', newlyUnlockedAbilities)
+      
       if (newlyUnlockedAbilities.length > 0) {
+        // store the newlyUnlockedAbilities in updateData.unlockAbilities
         updateData.unlockedAbilities = newlyUnlockedAbilities
         
       }
@@ -177,7 +197,7 @@ export default async function handler(req, res) {
         }
     }
   await prisma.userStats.update({ where: { userId: userStats.userId }, data: updateData });
-  res.status(200).json({ outcome: winner, updatedUserStats: updateData, updatedMonsterStats, item });
+  res.status(200).json({ outcome: winner, updatedUserStats: updateData, updatedMonsterStats, item, abilityText: abilityBattleText });
   return
   }
   // Monster's turn
@@ -185,10 +205,22 @@ export default async function handler(req, res) {
   updatedUserStats.hp_current -= Math.round(monsterDamage);
   if (updatedUserStats.hp_current <= 0) {
     winner = 'monster';
-    res.status(200).json({ outcome: winner, updatedUserStats, updatedMonsterStats });
+    res.status(200).json({ outcome: winner, updatedUserStats, updatedMonsterStats, abilityText: abilityBattleText });
     return;
   }
   // No winner yet
-  res.status(200).json({ outcome: winner, updatedUserStats, updatedMonsterStats, userDamage, monsterDamage });
+  const responseObject = {
+    outcome: winner,
+    updatedUserStats,
+    updatedMonsterStats,
+    userDamage,
+    monsterDamage,
+  }
+  if(abilityBattleText !== 'You attacked for ') {
+    responseObject.abilityText = abilityBattleText;
+  } else {
+    responseObject.abilityText = 'You attacked for ';
+  }
+  res.status(200).json(responseObject);
   return
 }

@@ -2,9 +2,22 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 import DiscordProvider from "next-auth/providers/discord";
+const prismaAdapter = PrismaAdapter(prisma);
+
+const customPrismaAdapter = {
+  ...prismaAdapter,
+  createUser: async (profile) => {
+    const user = await prismaAdapter.createUser(profile);
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/registerUser?userId=${user.id}`, {
+      method: "POST",
+    });
+
+    return user;
+  },
+};
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: customPrismaAdapter,
   providers: [
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID,
@@ -12,51 +25,16 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  // This callback function runs when a new session is created
-  callbacks: {
-    async session(session, user) {
-      // Check if this is the user's first session
-       const isNewUser = await prisma.user.findUnique({
-         where: { id: session.user.id },
-       include: {
-        userInventory: true,
-        userStats: true,
-       }
-       });
-        if (!isNewUser.userStats.length && !isNewUser.userInventory.length) {
-          console.log('hello: ', session.user.name)
-          await prisma.userStats.create({
-            data: {
-               id: isNewUser.id,
-               str: 4,
-               exp: 900,
-               hp_current: 1000,
-               user: { connect: { id: isNewUser.id } },
-            },
-          });
-          await prisma.userInventory.create({
-           data: {
-              id: isNewUser.id,
-              user: { connect: { id: isNewUser.id } },
-            },
-          });
-        } else {
-          await prisma.userStats.update({
-            //TODO:: finish implementing user stats
-            where: {
-              id: isNewUser.id,
-            },
-            data: {
-              online_status: true
-            }
-          })
-        }
-        
-
-     // Return the updated session
-      return session;
-    },
+callbacks: {
+  async session(session, ) {
+    return session;
   },
-};
+  
+},
+events: {
+   signIn: async ({account, isNewUser }) => {
+  }
+}
+}
 
 export default NextAuth(authOptions);

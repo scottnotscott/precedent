@@ -23,58 +23,26 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
   const router = useRouter();
   let battleEnd = false;
   async function getUserAttackOptions(userAbilities) {
-    if (!Array.isArray(userAbilities) || userAbilities.length === 0) {
-      // If no abilities are unlocked or userAbilities is not an array, return the default attack styles
-      return [
-        {
-          id: 'str',
-          name: 'Basic strength attack',
-          damage: userStats.str,
-        },
-        {
-          id: 'mag',
-          name: 'Basic magic attack',
-          damage: userStats.mag,
-        },
-        {
-          id: 'rng',
-          name: 'Basic ranged attack',
-          damage: userStats.rng,
-        },
-      ];
+    const defaultAttacks = [
+      { id: 'str', name: 'Basic strength attack', damage: userStats.str, battleText: 'You swing wildly with your fists' },
+      { id: 'mag', name: 'Basic magic attack', damage: userStats.mag, battleText: 'You tense your entire body and release a small shockwave' },
+      { id: 'rng', name: 'Basic ranged attack', damage: userStats.rng, battleText: 'You scan the surrounding area picking up and throwing a conveniently placed rock' },
+    ];
+  
+    const options = [...defaultAttacks];
+  
+    if (Array.isArray(userAbilities) && userAbilities.length > 0) {
+      userAbilities.forEach((ability) => {
+        const newAbility = {
+          id: ability.id,
+          name: ability.name,
+          damage: userStats[ability.type] * ability.effect.damageMultiplier,
+          battleText: ability.battleText
+        };
+        options.push(newAbility);
+      });
     }
-    const options = userAbilities.map((ability) => ({
-      id: ability.id,
-      name: ability.name,
-      damage: userStats[ability.type] * ability.effect.damageModifier,
-    }));
-    console.log("Generated options:", options);
     return options;
-    
-  }
-  async function updateUnlockedAbilities(userId, str) {
-    const abilitiesToUnlock = abilities.filter(ability => ability.requiredLevel === str);
-    if (abilitiesToUnlock.length > 0) {
-      const userStats = await prisma.userStats.findUnique({
-        where: {
-          userId: userId,
-        },
-      });
-  
-      const existingAbilities = userStats.unlockedAbilities || [];
-      const newAbilities = abilitiesToUnlock.map(ability => ability.id);
-  
-      await prisma.userStats.update({
-        where: {
-          userId: userId,
-        },
-        data: {
-          unlockedAbilities: {
-            set: [...existingAbilities, ...newAbilities],
-          },
-        },
-      });
-    }
   }
   const countdownRef = useRef(countdown);
   useEffect(() => {
@@ -94,7 +62,6 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
   }, [monsterData]);
   useEffect(() => {
     if (userAbilitiesData && userAbilitiesData.abilities && userAbilitiesData.abilities.length > 0 && userStats) {
-      console.log("userAbilitiesData", userAbilitiesData);
       getUserAttackOptions(userAbilitiesData.abilities).then((options) => {
         setAttackOptions(options);
       });
@@ -102,7 +69,6 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
   }, [userAbilitiesData, userStats]);
   useEffect(() => {
     if (userAbilitiesError) {
-      console.error('Error fetching user abilities:', userAbilitiesError);
     }
   }, [userAbilitiesError]);
   useEffect(() => {
@@ -133,6 +99,7 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
       const userAbilities = userStats.unlockedAbilities || [];
       getUserAttackOptions(userAbilities).then((options) => {
         setAttackOptions(options);
+        console.log('options: ', options)
       });
     }
   }, [userStats]);
@@ -142,10 +109,11 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
       monsterStats,
       selectedMove,
     });
-    const { outcome, updatedUserStats, updatedMonsterStats, userDamage, monsterDamage, item } = response.data;
+    const { outcome, updatedUserStats, updatedMonsterStats, userDamage, monsterDamage, item, abilityText } = response.data;
+    
     setUserStats(updatedUserStats);
     setMonsterStats(updatedMonsterStats);
-    setUserAction({ move: selectedMove, damage: userDamage });
+    setUserAction({ move: selectedMove, damage: userDamage, battleText: abilityText });
     setMonsterAction({ move: "base_str", damage: monsterDamage });
     if (outcome) {
       setBattleOutcome(outcome);
@@ -159,7 +127,7 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
     }
   };
   const handleMoveChange = (e) => {
-    setSelectedMove(e.target.value);
+    setSelectedMove(e.target.value.toString());
   };
   const renderAttackOptions = () => {
     return attackOptions.map((option, index) => (
@@ -169,7 +137,7 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
           id={option.id}
           name="move"
           value={option.id}
-          checked={selectedMove === option.id}
+          checked={selectedMove === option.id.toString()}
           onChange={handleMoveChange}
         />
         <label htmlFor={option.id}>
@@ -206,9 +174,10 @@ const BattleScreen = ({ monsterId, baseHP, session, onBattleEnd }) => {
               </div>
             </>
           )}
+          
           {userAction && (
             <div>
-              <p>You used {userAction.move} dealing {userAction.damage} dmg!</p>
+              <p>{userAction.battleText} {userAction.damage} dmg!</p>
             </div>
           )}
           {monsterAction && (
