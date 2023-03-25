@@ -4,10 +4,11 @@ import Footer from "../footer";
 import CharPanel from "../charpanel";
 import useStats from "./../../useStats";
 import useInventory from "./../../useInventory";
-import React from "react";
+import React, {useState} from "react";
 
 export default function Layout({ children }) {
   const { data: session, status } = useSession();
+  const [showCharPanel, setShowCharPanel] = useState(true);
   const userAuthenticatedAndLoaded = session && status !== "loading";
   const { data: userStats } = useStats(userAuthenticatedAndLoaded ? session.user.id : null);
   const { data: userInventory} = useInventory(userAuthenticatedAndLoaded ? session.user.id : null);

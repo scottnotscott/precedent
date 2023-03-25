@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Avatar } from 'react-daisyui';
 
 export default function CharPanel({ userStats, session, userInventory }) {
-    
+
 
     if (!userStats) {
         return (
@@ -13,22 +13,22 @@ export default function CharPanel({ userStats, session, userInventory }) {
     }
     return (
 
-        <div className="h-screen w-64
+        <div className="h-screen w-64 md:w-48 sm:w-32
         flex flex-col
       bg-gray-900 text-white shadow-lg
-        p-3 items-center">
+        p-3 sm:p-2 items-center">
             <div className="flex flex-col items-center bg-gray-900 text-pink-300 rounded-md">
                 <div className="flex flex-row items-center  text-white-900 mb-2"> <h3 className="text-white">Character Sheet</h3> </div>
                 <div className="flex flex-row items-center"> <Avatar size="lg" src={session.user.image} /> </div>
                 <p>Name:<div className="bg-[url('https://media1.giphy.com/media/3ohhwBrZCQBtmVA91K/giphy.gif')]">{session.user.name}</div></p>
                 <p>
-                {userStats.exp}/
-  {userStats.level !== 1 ? (
-    1000 * (userStats.level - 1) * (userStats.level - 1)
-  ) : (
-    1000 * userStats.level * userStats.level
-  )}
-xp</p>
+                    {userStats.exp}/
+                    {userStats.level !== 1 ? (
+                        1000 * (userStats.level - 1) * (userStats.level - 1)
+                    ) : (
+                        1000 * userStats.level * userStats.level
+                    )}
+                    xp</p>
                 <p>Level: {userStats.level}</p>
                 <p>Rank: {userStats.rank}</p>
                 <p>Village: {userStats.village}</p>
