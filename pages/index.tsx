@@ -81,6 +81,11 @@ export default function Home() {
                     <Table.Row>
                         
                         <span>{data[0].version}</span>
+                        <span>{data[0].changelog['0.05']}</span>
+                      </Table.Row>
+                    <Table.Row>
+                        
+                        <span>0.04</span>
                         <span>{data[0].changelog['0.04']}</span>
                       </Table.Row>
                       <Table.Row>

@@ -18,6 +18,11 @@
                 " - Added in-game items ",
                 " - Added in-game inventory to hold items ",
                 " - Added in-game loot tables specific to source of item "
+            ],
+            "0.05": [
+                " - Added unlockable abilities",
+                " - Added monster level scaling",
+                " - Improved colosseum display"
             ]
         }
     }

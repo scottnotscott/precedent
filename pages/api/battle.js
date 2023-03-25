@@ -131,6 +131,8 @@ export default async function handler(req, res) {
       console.log('updateData[statType]: ', updateData[statType])
       //increase the usersStats.level by 1
       updateData.level = newLevel;
+      updateData.hp = updateData.hp + 25;
+      updateData.hp_current = updateData.hp;
 
       // check the updateData[ability.type] is greater than or equal to the ability.requiredLevel
       const checkAbilityRequirements = (ability, updateData) => {

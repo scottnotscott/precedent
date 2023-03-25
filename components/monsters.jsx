@@ -34,7 +34,7 @@ export default function Monsters({ userStats, session }) {
   const renderMonsterCards = (area) => {
     let monsterIds;
     if(area === "Konoki range") {monsterIds = [1,2,3,4,5,6]}
-    if(area === 'Shine peaks') {monsterIds = [6,5,4,3,2,1]}
+    if(area === 'Shine peaks') {monsterIds = [7,8,9,10,11,12]}
     if(area === 'Shroud forest') {monsterIds = [2,1,4,3,6,5]}
     if(area === 'Current') {monsterIds = [5,6,3,4,1,2]}
     return monsterIds.map((id) => (

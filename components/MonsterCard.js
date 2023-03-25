@@ -24,8 +24,8 @@ export default function MonsterCard({ id, onEngageClick }) {
             className="animate-pulse"
             src={monsterData.image}
             alt={monsterData.description}
-            height={64}
-            width={64}
+            height={100}
+            width={100}
           />
           </Tooltip>
           <Card.Body className="items-center text-center ">
