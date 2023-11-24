@@ -32,7 +32,30 @@ callbacks: {
   
 },
 events: {
-   signIn: async ({account, isNewUser }) => {
+   signIn: async ({user }) => {
+    console.log('am i even called? signin')
+    console.log('signed in user: ', user)
+    await prisma.userStats.update({
+      where: {
+        userId: user.id
+      },
+      data: {
+        online_status: true
+      }
+    })
+  },
+  signOut: async({session}) => {
+    console.log('am i even called? signout')
+    console.log('signed out user: ', session);
+    console.log('session.userId', session.userId)
+    await prisma.userStats.update({
+      where: {
+        userId: session.userId
+      },
+      data: {
+        online_status: false
+      }
+    })
   }
 }
 }
