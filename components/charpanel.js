@@ -13,9 +13,9 @@ export default function CharPanel({ userStats, session, userInventory }) {
     }
     return (
 
-        <div className="h-screen w-64 md:w-48 sm:w-32
+        <div className="h-screen w-64 md:w-48 sm:hidden md:block
         flex flex-col
-      bg-gray-900 text-white shadow-lg
+        bg-gray-900 text-white shadow-lg
         p-3 sm:p-2 items-center">
             <div className="flex flex-col items-center bg-gray-900 text-pink-300 rounded-md">
                 <div className="flex flex-row items-center  text-white-900 mb-2"> <h3 className="text-white">Character Sheet</h3> </div>

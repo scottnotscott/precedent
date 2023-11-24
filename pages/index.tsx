@@ -37,7 +37,7 @@ export default function Home() {
             <Button color="primary" onClick={handleClickDev}>Dev Login</Button>
             <Button color="secondary" onClick={handleClickAlpha}>Alpha Login</Button>
             <Divider />
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center md:text-xs ">
               <div className="tabs">
                 <a
                   className={`tab tab-bordered${activeTab === 1 ? " tab-active" : ""}`}

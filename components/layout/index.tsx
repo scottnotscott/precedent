@@ -5,6 +5,8 @@ import CharPanel from "../charpanel";
 import useStats from "./../../useStats";
 import useInventory from "./../../useInventory";
 import React, {useState} from "react";
+import { Button } from 'react-daisyui'
+import { Activity } from 'lucide-react'
 
 export default function Layout({ children }) {
   const { data: session, status } = useSession();
@@ -20,8 +22,14 @@ export default function Layout({ children }) {
   return (
     <div className={`flex min-h-screen bg-gray-700 ${!session ? "justify-center" : ""}`}>
       {session && <Sidebar session={session} />}
-      <div className={`flex-grow flex flex-col ${session ? "w-full" : "w-screen"}`}>{renderChildren()}</div>
-      {session && <CharPanel userStats={userStats} session={session} userInventory={userInventory} />}
+      <div className={`flex-grow flex flex-col ${session ? "w-full" : "w-screen"}`}>
+        <div className=" flex flex-row items-center">
+          <Button shape={"circle"} size={"sm"} onClick={() => setShowCharPanel(!showCharPanel)}>Test</Button>
+        </div>
+  
+        {renderChildren()}
+      </div>
+      {session && showCharPanel && <CharPanel userStats={userStats} session={session} userInventory={userInventory} />}
       <Footer />
     </div>
   );
